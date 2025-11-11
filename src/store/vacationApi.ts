@@ -30,10 +30,10 @@ export interface Vacation {
   isRewardVacation: boolean;
   reason: string;
   status: VacationStatus;
-  reviewedByChief?: User;
+  reviewedByChief?: User & { reviewedAt?: string };
   chiefRemarks?: string;
   chiefReviewDate?: string;
-  reviewedByPrincipal?: User;
+  reviewedByPrincipal?: User & { reviewedAt?: string };
   principalRemarks?: string;
   principalReviewDate?: string;
   isExtension: boolean;
@@ -206,6 +206,14 @@ export const vacationApi = apiSlice.injectEndpoints({
       query: () => "/vacations/stats/overview",
       providesTags: ["Vacation"],
     }),
+
+    downloadVacationPDF: builder.mutation<Blob, string>({
+      query: (id) => ({
+        url: `/vacations/${id}/download-pdf`,
+        method: "GET",
+        responseHandler: (response) => response.blob(),
+      }),
+    }),
   }),
 });
 
@@ -222,4 +230,5 @@ export const {
   useGetVacationSummaryQuery,
   useCheckRewardEligibilityMutation,
   useGetVacationStatisticsQuery,
+  useDownloadVacationPDFMutation,
 } = vacationApi;

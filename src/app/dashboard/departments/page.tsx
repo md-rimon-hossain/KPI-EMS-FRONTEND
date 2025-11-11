@@ -2,10 +2,18 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import {
   useGetAllDepartmentsQuery,
   useDeleteDepartmentMutation,
 } from "@/store/departmentApi";
+import { usePermission } from "@/hooks/usePermission";
+import { Permission } from "@/lib/permissions";
+import {
+  Can,
+  PermissionGuard,
+  InfoTooltip,
+} from "@/components/PermissionComponents";
 import Card from "@/components/Card";
 import Table from "@/components/Table";
 import Button from "@/components/Button";
@@ -16,6 +24,8 @@ import toast from "react-hot-toast";
 
 export default function DepartmentsPage() {
   const router = useRouter();
+  const { t } = useTranslation();
+  const { can } = usePermission();
   const { data: departmentsData, isLoading } = useGetAllDepartmentsQuery();
   const departments = departmentsData?.data?.departments || [];
   const [deleteDepartment, { isLoading: isDeleting }] =
@@ -28,18 +38,18 @@ export default function DepartmentsPage() {
 
     try {
       await deleteDepartment(selectedDept._id).unwrap();
-      toast.success("Department deleted successfully");
+      toast.success(t("department.deleteSuccess"));
       setDeleteModalOpen(false);
       setSelectedDept(null);
     } catch (error: any) {
-      toast.error(error?.data?.message || "Failed to delete department");
+      toast.error(error?.data?.message || t("department.deleteError"));
     }
   };
 
   const columns = [
     {
       key: "name",
-      header: "Department Name",
+      header: t("department.departmentName"),
       render: (dept: any) => (
         <div>
           <p className="font-medium text-gray-900">{dept.name}</p>
@@ -49,85 +59,104 @@ export default function DepartmentsPage() {
     },
     {
       key: "chiefInstructor",
-      header: "Chief Instructor",
-      render: (dept: any) => dept.chiefInstructor?.name || "Not assigned",
+      header: t("roles.chief_instructor"),
+      render: (dept: any) =>
+        dept.chiefInstructor?.name || t("common.notAssigned"),
     },
     {
       key: "description",
-      header: "Description",
+      header: t("department.description"),
       render: (dept: any) => dept.description || "-",
     },
     {
       key: "actions",
-      header: "Actions",
+      header: t("common.actions"),
       width: "150px",
       render: (dept: any) => (
         <div className="flex gap-2">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              router.push(`/dashboard/departments/${dept._id}`);
-            }}
-            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-          >
-            <PencilIcon className="w-4 h-4" />
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setSelectedDept(dept);
-              setDeleteModalOpen(true);
-            }}
-            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-          >
-            <TrashIcon className="w-4 h-4" />
-          </button>
+          <Can permission={Permission.EDIT_DEPARTMENT}>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(`/dashboard/departments/${dept._id}`);
+              }}
+              className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+            >
+              <PencilIcon className="w-4 h-4" />
+            </button>
+          </Can>
+          <Can permission={Permission.DELETE_DEPARTMENT}>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedDept(dept);
+                setDeleteModalOpen(true);
+              }}
+              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+            >
+              <TrashIcon className="w-4 h-4" />
+            </button>
+          </Can>
         </div>
       ),
     },
   ];
 
   if (isLoading) {
-    return <Loading fullScreen text="Loading departments..." />;
+    return <Loading fullScreen text={t("common.loading")} />;
   }
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Departments</h1>
-          <p className="text-gray-600 mt-1">Manage academic departments</p>
+    <PermissionGuard permission={Permission.VIEW_DEPARTMENTS}>
+      <div>
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-2">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">
+                {t("department.list")}
+              </h1>
+              <p className="text-gray-600 mt-1">{t("dashboard.subtitle")}</p>
+            </div>
+            <InfoTooltip
+              text={
+                t("department.manageTooltip") ||
+                "Manage institution departments"
+              }
+            />
+          </div>
+          <Can permission={Permission.CREATE_DEPARTMENT}>
+            <Button
+              variant="primary"
+              onClick={() => router.push("/dashboard/departments/create")}
+            >
+              <PlusIcon className="w-5 h-5 mr-2" />
+              {t("department.create")}
+            </Button>
+          </Can>
         </div>
-        <Button
-          variant="primary"
-          onClick={() => router.push("/dashboard/departments/create")}
-        >
-          <PlusIcon className="w-5 h-5 mr-2" />
-          Add Department
-        </Button>
-      </div>
 
-      <Card padding="none">
-        <Table
-          data={departments || []}
-          columns={columns}
-          onRowClick={(dept) =>
-            router.push(`/dashboard/departments/${dept._id}`)
-          }
-          emptyMessage="No departments found"
+        <Card padding="none">
+          <Table
+            data={departments || []}
+            columns={columns}
+            onRowClick={(dept) =>
+              router.push(`/dashboard/departments/${dept._id}`)
+            }
+            emptyMessage={t("department.noDepartments")}
+          />
+        </Card>
+
+        <ConfirmModal
+          isOpen={deleteModalOpen}
+          onClose={() => setDeleteModalOpen(false)}
+          onConfirm={handleDelete}
+          title={t("department.delete")}
+          message={t("department.confirmDelete", { name: selectedDept?.name })}
+          confirmText={t("common.delete")}
+          variant="danger"
+          loading={isDeleting}
         />
-      </Card>
-
-      <ConfirmModal
-        isOpen={deleteModalOpen}
-        onClose={() => setDeleteModalOpen(false)}
-        onConfirm={handleDelete}
-        title="Delete Department"
-        message={`Are you sure you want to delete ${selectedDept?.name}? This action cannot be undone.`}
-        confirmText="Delete"
-        variant="danger"
-        loading={isDeleting}
-      />
-    </div>
+      </div>
+    </PermissionGuard>
   );
 }

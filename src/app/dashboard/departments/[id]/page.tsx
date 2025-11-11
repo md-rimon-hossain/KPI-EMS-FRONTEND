@@ -2,11 +2,17 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import {
   useGetDepartmentByIdQuery,
   useUpdateDepartmentMutation,
 } from "@/store/departmentApi";
 import { useGetAllUsersQuery } from "@/store/userApi";
+import { Permission } from "@/lib/permissions";
+import {
+  PermissionGuard,
+  InfoTooltip,
+} from "@/components/PermissionComponents";
 import Card from "@/components/Card";
 import Input from "@/components/Input";
 import Button from "@/components/Button";
@@ -15,6 +21,7 @@ import toast from "react-hot-toast";
 
 export default function EditDepartmentPage() {
   const router = useRouter();
+  const { t } = useTranslation();
   const params = useParams();
   const id = params.id as string;
 
@@ -104,143 +111,157 @@ export default function EditDepartmentPage() {
       }
 
       await updateDepartment({ id, data: payload }).unwrap();
-      toast.success("Department updated successfully");
+      toast.success(t("department.updateSuccess"));
       router.push("/dashboard/departments");
     } catch (error: any) {
-      toast.error(error?.data?.message || "Failed to update department");
+      toast.error(error?.data?.message || t("department.updateError"));
     }
   };
 
   if (isLoadingDept) {
-    return <Loading fullScreen text="Loading department..." />;
+    return <Loading fullScreen text={t("common.loading")} />;
   }
 
   if (!department) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-600">Department not found</p>
+        <p className="text-gray-600">{t("department.noDepartments")}</p>
         <Button
           variant="primary"
           onClick={() => router.push("/dashboard/departments")}
           className="mt-4"
         >
-          Back to Departments
+          {t("common.back")}
         </Button>
       </div>
     );
   }
 
   return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Edit Department</h1>
-        <p className="text-gray-600 mt-1">Update department information</p>
-      </div>
-
-      <Card>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Input
-            label="Department Name"
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            error={errors.name}
-            placeholder="e.g., Computer Science & Technology"
-            required
-          />
-
-          <Input
-            label="Department Code"
-            type="text"
-            name="code"
-            value={formData.code}
-            onChange={handleChange}
-            error={errors.code}
-            placeholder="e.g., CST"
-            helperText="Short code for the department (will be converted to uppercase)"
-            required
-          />
-
+    <PermissionGuard permission={Permission.EDIT_DEPARTMENT}>
+      <div>
+        <div className="mb-6 flex items-start gap-2">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Chief Instructor
-            </label>
-            <select
-              name="chiefInstructor"
-              value={formData.chiefInstructor}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Select Chief Instructor (Optional)</option>
-              {chiefInstructors?.map((user: any) => (
-                <option key={user._id} value={user._id}>
-                  {user.name} ({user.email})
-                </option>
-              ))}
-            </select>
-            {chiefInstructors.length === 0 && (
-              <p className="mt-1 text-sm text-gray-500">
-                No chief instructors available. Create a user with Chief
-                Instructor role first.
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Description
-            </label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              rows={4}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Brief description about the department..."
-            />
-          </div>
-
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="isActive"
-              name="isActive"
-              checked={formData.isActive}
-              onChange={handleChange}
-              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-            />
-            <label
-              htmlFor="isActive"
-              className="ml-2 text-sm font-medium text-gray-700"
-            >
-              Active Department
-            </label>
-            <p className="ml-2 text-sm text-gray-500">
-              (Inactive departments won't appear in dropdowns)
+            <h1 className="text-3xl font-bold text-gray-900">
+              {t("department.edit")}
+            </h1>
+            <p className="text-gray-600 mt-1">
+              {t("department.editSubtitle") || "Update department information"}
             </p>
           </div>
+          <InfoTooltip
+            text={
+              t("department.editTooltip") ||
+              "Edit department details and assign chief instructor"
+            }
+          />
+        </div>
 
-          <div className="flex gap-3 pt-4">
-            <Button
-              type="submit"
-              variant="primary"
-              loading={isLoading}
-              fullWidth
-            >
-              Update Department
-            </Button>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => router.push("/dashboard/departments")}
-              fullWidth
-            >
-              Cancel
-            </Button>
-          </div>
-        </form>
-      </Card>
-    </div>
+        <Card>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Input
+              label={t("department.departmentName")}
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              error={errors.name}
+              placeholder="e.g., Computer Science & Technology"
+              required
+            />
+
+            <Input
+              label="Department Code"
+              type="text"
+              name="code"
+              value={formData.code}
+              onChange={handleChange}
+              error={errors.code}
+              placeholder="e.g., CST"
+              helperText="Short code for the department (will be converted to uppercase)"
+              required
+            />
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Chief Instructor
+              </label>
+              <select
+                name="chiefInstructor"
+                value={formData.chiefInstructor}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select Chief Instructor (Optional)</option>
+                {chiefInstructors?.map((user: any) => (
+                  <option key={user._id} value={user._id}>
+                    {user.name} ({user.email})
+                  </option>
+                ))}
+              </select>
+              {chiefInstructors.length === 0 && (
+                <p className="mt-1 text-sm text-gray-500">
+                  No chief instructors available. Create a user with Chief
+                  Instructor role first.
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Description
+              </label>
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                rows={4}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Brief description about the department..."
+              />
+            </div>
+
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="isActive"
+                name="isActive"
+                checked={formData.isActive}
+                onChange={handleChange}
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <label
+                htmlFor="isActive"
+                className="ml-2 text-sm font-medium text-gray-700"
+              >
+                Active Department
+              </label>
+              <p className="ml-2 text-sm text-gray-500">
+                (Inactive departments won't appear in dropdowns)
+              </p>
+            </div>
+
+            <div className="flex gap-3 pt-4">
+              <Button
+                type="submit"
+                variant="primary"
+                loading={isLoading}
+                fullWidth
+              >
+                Update Department
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => router.push("/dashboard/departments")}
+                fullWidth
+              >
+                {t("common.cancel")}
+              </Button>
+            </div>
+          </form>
+        </Card>
+      </div>
+    </PermissionGuard>
   );
 }

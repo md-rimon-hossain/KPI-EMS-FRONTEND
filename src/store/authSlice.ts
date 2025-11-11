@@ -20,9 +20,36 @@ export interface User {
   };
   phone?: string;
   vacationBalance: number;
+  rewardVacationBalance?: number;
+  lastAnnualVacationReset?: string;
+  lastRewardCheck?: string;
   joiningDate: string;
   isActive: boolean;
   isEmailVerified: boolean;
+
+  // Employment & Job Details
+  jobTitle?: string;
+  position?: string;
+  departmentWorkArea?: string;
+  employmentStatus?: string;
+  startDate?: string;
+  contractDocument?: string;
+  jobDescription?: string;
+
+  // Personal Information
+  presentAddress?: string;
+  permanentAddress?: string;
+  nidNumber?: string;
+  dateOfBirth?: string;
+  bloodGroup?: string;
+
+  // Emergency Contact
+  emergencyContact?: {
+    name: string;
+    relationship: string;
+    phone: string;
+  };
+
   createdAt: string;
   updatedAt: string;
 }

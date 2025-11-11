@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "../styles/globals.css";
+import "@/styles/globals.css";
 import { Providers } from "@/components/Providers";
 import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Polytechnic EMS - Employee & Leave Management",
-  description: "Employee and Leave Management System for Polytechnic College",
+  title: "KPI EMS - Kushtia Polytechnic Institute Employee Management System",
+  description:
+    "Vacation Management System - Kushtia Polytechnic Institute Employee Management System for efficient leave and vacation tracking",
 };
 
 export default function RootLayout({

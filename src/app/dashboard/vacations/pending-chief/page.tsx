@@ -2,10 +2,16 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import {
   useGetPendingForChiefQuery,
   useReviewByChiefMutation,
 } from "@/store/vacationApi";
+import { Permission } from "@/lib/permissions";
+import {
+  PermissionGuard,
+  InfoTooltip,
+} from "@/components/PermissionComponents";
 import Card from "@/components/Card";
 import Table from "@/components/Table";
 import Button from "@/components/Button";
@@ -16,6 +22,7 @@ import toast from "react-hot-toast";
 
 export default function PendingChiefPage() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { data: vacationsData, isLoading } = useGetPendingForChiefQuery();
   const vacations = vacationsData?.data?.vacations || [];
   const [reviewByChief, { isLoading: isReviewing }] =
@@ -165,99 +172,113 @@ export default function PendingChiefPage() {
   }
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            Pending Vacation Approvals
-          </h1>
-          <p className="text-gray-600 mt-1">
-            Review and approve vacation requests from your department
-          </p>
-        </div>
-        <Button
-          variant="secondary"
-          onClick={() => router.push("/dashboard/vacations")}
-        >
-          Back to My Vacations
-        </Button>
-      </div>
-
-      <Card padding="none">
-        <Table
-          data={vacations || []}
-          columns={columns}
-          onRowClick={(vacation) =>
-            router.push(`/dashboard/vacations/${vacation._id}`)
-          }
-          emptyMessage="No pending vacation requests"
-        />
-      </Card>
-
-      {/* Review Modal */}
-      <ConfirmModal
-        isOpen={reviewModalOpen}
-        onClose={() => {
-          setReviewModalOpen(false);
-          setSelectedVacation(null);
-          setRemarks("");
-        }}
-        onConfirm={handleReview}
-        title={`${
-          reviewAction === "approved_by_chief" ? "Approve" : "Reject"
-        } Vacation Request`}
-        message={
-          <div className="space-y-4">
-            <p>
-              {reviewAction === "approved_by_chief"
-                ? "Are you sure you want to approve this vacation request? It will be forwarded to the Principal for final approval."
-                : "Are you sure you want to reject this vacation request? The employee's vacation balance will be restored."}
-            </p>
+    <PermissionGuard permission={Permission.APPROVE_AS_CHIEF}>
+      <div>
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-start gap-2">
             <div>
-              <p className="font-medium mb-2">
-                Employee: {selectedVacation?.employee?.name}
-              </p>
-              <p className="text-sm text-gray-600 mb-2">
-                Vacation Type:{" "}
-                {selectedVacation?.vacationType
-                  ?.replace(/_/g, " ")
-                  .toUpperCase()}
-              </p>
-              <p className="text-sm text-gray-600 mb-4">
-                Duration:{" "}
-                {new Date(selectedVacation?.startDate).toLocaleDateString()} to{" "}
-                {new Date(selectedVacation?.endDate).toLocaleDateString()} (
-                {selectedVacation?.totalDays} days)
+              <h1 className="text-3xl font-bold text-gray-900">
+                {t("vacation.pendingChiefTitle") ||
+                  "Pending Vacation Approvals"}
+              </h1>
+              <p className="text-gray-600 mt-1">
+                {t("vacation.pendingChiefDesc") ||
+                  "Review and approve vacation requests from your department"}
               </p>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Remarks{" "}
-                {reviewAction === "rejected" && (
-                  <span className="text-red-500">*</span>
-                )}
-              </label>
-              <textarea
-                value={remarks}
-                onChange={(e) => setRemarks(e.target.value)}
-                rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder={
-                  reviewAction === "approved_by_chief"
-                    ? "Optional remarks for approval..."
-                    : "Please provide a reason for rejection"
-                }
-                required={reviewAction === "rejected"}
-              />
-            </div>
+            <InfoTooltip
+              text={
+                t("vacation.chiefApprovalTooltip") ||
+                "Review department employee vacation requests as chief instructor"
+              }
+            />
           </div>
-        }
-        confirmText={
-          reviewAction === "approved_by_chief" ? "Approve" : "Reject"
-        }
-        variant={reviewAction === "approved_by_chief" ? "info" : "danger"}
-        loading={isReviewing}
-      />
-    </div>
+          <Button
+            variant="secondary"
+            onClick={() => router.push("/dashboard/vacations")}
+          >
+            {t("common.back")}
+          </Button>
+        </div>
+
+        <Card padding="none">
+          <Table
+            data={vacations || []}
+            columns={columns}
+            onRowClick={(vacation) =>
+              router.push(`/dashboard/vacations/${vacation._id}`)
+            }
+            emptyMessage="No pending vacation requests"
+          />
+        </Card>
+
+        {/* Review Modal */}
+        <ConfirmModal
+          isOpen={reviewModalOpen}
+          onClose={() => {
+            setReviewModalOpen(false);
+            setSelectedVacation(null);
+            setRemarks("");
+          }}
+          onConfirm={handleReview}
+          title={`${
+            reviewAction === "approved_by_chief" ? "Approve" : "Reject"
+          } Vacation Request`}
+          message={
+            <div className="space-y-4">
+              <p>
+                {reviewAction === "approved_by_chief"
+                  ? "Are you sure you want to approve this vacation request? It will be forwarded to the Principal for final approval."
+                  : "Are you sure you want to reject this vacation request? The employee's vacation balance will be restored."}
+              </p>
+              <div>
+                <p className="font-medium mb-2">
+                  Employee: {selectedVacation?.employee?.name}
+                </p>
+                <p className="text-sm text-gray-600 mb-2">
+                  Vacation Type:{" "}
+                  {selectedVacation?.vacationType
+                    ?.replace(/_/g, " ")
+                    .toUpperCase()}
+                </p>
+                <p className="text-sm text-gray-600 mb-4">
+                  Duration:{" "}
+                  {new Date(selectedVacation?.startDate).toLocaleDateString()}{" "}
+                  to {new Date(selectedVacation?.endDate).toLocaleDateString()}{" "}
+                  ({selectedVacation?.totalDays} days)
+                </p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Remarks{" "}
+                  {reviewAction === "rejected" && (
+                    <span className="text-red-500">*</span>
+                  )}
+                </label>
+                <textarea
+                  value={remarks}
+                  onChange={(e) => setRemarks(e.target.value)}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder={
+                    reviewAction === "approved_by_chief"
+                      ? "Optional remarks for approval..."
+                      : "Please provide a reason for rejection"
+                  }
+                  required={reviewAction === "rejected"}
+                />
+              </div>
+            </div>
+          }
+          confirmText={
+            reviewAction === "approved_by_chief"
+              ? t("common.approve")
+              : t("common.reject")
+          }
+          variant={reviewAction === "approved_by_chief" ? "info" : "danger"}
+          loading={isReviewing}
+        />
+      </div>
+    </PermissionGuard>
   );
 }

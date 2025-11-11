@@ -24,27 +24,31 @@ export default function Input({
       {label && (
         <label
           htmlFor={inputId}
-          className="block text-sm font-medium text-gray-700 mb-1"
+          className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1"
         >
           {label}
-          {props.required && <span className="text-red-500 ml-1">*</span>}
+          {props.required && <span className="text-red-500 ml-0.5">*</span>}
         </label>
       )}
       <input
         id={inputId}
         className={clsx(
-          "w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors",
+          "w-full px-2.5 py-2 sm:px-3 sm:py-2.5 text-sm sm:text-base border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 min-h-[40px] sm:min-h-[44px]",
           error
             ? "border-red-500 focus:border-red-500 focus:ring-red-500"
             : "border-gray-300 focus:border-blue-500",
-          props.disabled && "bg-gray-100 cursor-not-allowed",
+          props.disabled && "bg-gray-100 cursor-not-allowed opacity-60",
           className
         )}
         {...props}
       />
-      {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
+      {error && (
+        <p className="mt-1 text-xs sm:text-sm text-red-600 font-medium">
+          {error}
+        </p>
+      )}
       {helperText && !error && (
-        <p className="mt-1 text-sm text-gray-500">{helperText}</p>
+        <p className="mt-1 text-xs sm:text-sm text-gray-500">{helperText}</p>
       )}
     </div>
   );

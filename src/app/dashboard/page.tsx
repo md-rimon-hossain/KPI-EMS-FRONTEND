@@ -1,6 +1,10 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
 import { useAppSelector } from "@/store/hooks";
+import { usePermission } from "@/hooks/usePermission";
+import { Permission } from "@/lib/permissions";
+import { Can, RoleBadge } from "@/components/PermissionComponents";
 import { useGetAllUsersQuery } from "@/store/userApi";
 import { useGetAllDepartmentsQuery } from "@/store/departmentApi";
 import { useGetMyVacationsQuery } from "@/store/vacationApi";
@@ -16,10 +20,21 @@ import {
 } from "@heroicons/react/24/outline";
 
 export default function DashboardPage() {
+  const { t } = useTranslation();
   const { user } = useAppSelector((state) => state.auth);
-  const { data: usersData, isLoading: usersLoading } = useGetAllUsersQuery();
+  const { can, role } = usePermission();
+
+  // Conditionally fetch data based on permissions
+  const { data: usersData, isLoading: usersLoading } = useGetAllUsersQuery(
+    undefined,
+    {
+      skip: !can(Permission.VIEW_ALL_USERS),
+    }
+  );
   const { data: departmentsData, isLoading: depsLoading } =
-    useGetAllDepartmentsQuery();
+    useGetAllDepartmentsQuery(undefined, {
+      skip: !can(Permission.VIEW_DEPARTMENTS),
+    });
   const { data: vacationsData, isLoading: vacationsLoading } =
     useGetMyVacationsQuery();
 
@@ -27,140 +42,134 @@ export default function DashboardPage() {
   const departments = departmentsData?.data?.departments || [];
   const vacations = vacationsData?.data?.vacations || [];
 
-  const isLoading = usersLoading || depsLoading || vacationsLoading;
-
-  const canViewUsers = ["super_admin", "principal", "general_shakha"].includes(
-    user?.role || ""
-  );
-  const canViewDepartments = [
-    "super_admin",
-    "principal",
-    "general_shakha",
-  ].includes(user?.role || "");
+  const isLoading = vacationsLoading;
 
   const stats = [
     {
-      title: "Total Users",
+      title: t("dashboard.stats.totalUsers"),
       value: users?.length || 0,
       icon: UsersIcon,
       color: "blue",
-      visible: canViewUsers,
+      permission: Permission.VIEW_ALL_USERS,
     },
     {
-      title: "Departments",
+      title: t("dashboard.stats.departments"),
       value: departments?.length || 0,
       icon: BuildingOfficeIcon,
       color: "green",
-      visible: canViewDepartments,
+      permission: Permission.VIEW_DEPARTMENTS,
     },
     {
-      title: "My Vacations",
+      title: t("dashboard.stats.myVacations"),
       value: vacations?.length || 0,
       icon: CalendarDaysIcon,
       color: "purple",
-      visible: true,
+      permission: Permission.VIEW_OWN_VACATIONS,
     },
     {
-      title: "Vacation Balance",
+      title: t("dashboard.stats.vacationBalance"),
       value: user?.vacationBalance || 0,
       icon: ChartBarIcon,
       color: "orange",
-      visible: true,
+      permission: Permission.VIEW_OWN_VACATIONS,
     },
   ];
 
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return "Good Morning";
-    if (hour < 18) return "Good Afternoon";
-    return "Good Evening";
+    if (hour < 12) return t("dashboard.greeting.morning");
+    if (hour < 18) return t("dashboard.greeting.afternoon");
+    return t("dashboard.greeting.evening");
   };
 
   if (isLoading) {
-    return <Loading fullScreen text="Loading dashboard..." />;
+    return <Loading fullScreen text={t("common.loading")} />;
   }
 
   return (
-    <div>
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">
-          {getGreeting()}, {user?.name}!
+    <div className="section-spacing">
+      {/* Header - Ultra Compact Mobile */}
+      <div className="mb-4 sm:mb-6">
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
+          {getGreeting()}, <span className="text-blue-600">{user?.name}</span>!
         </h1>
-        <p className="text-gray-600 mt-2">
-          Welcome to your dashboard. Here's what's happening today.
+        <p className="text-xs sm:text-sm text-gray-600 mt-1">
+          {t("dashboard.welcome")}
         </p>
-        <Badge variant="info" size="md" className="mt-3">
-          {user?.role?.replace(/_/g, " ").toUpperCase()}
+        <Badge variant="info" size="sm" className="mt-2">
+          {t(`roles.${user?.role || "instructor"}`)}
         </Badge>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {stats
-          .filter((stat) => stat.visible)
-          .map((stat) => {
-            const Icon = stat.icon;
-            const colorClasses = {
-              blue: "bg-blue-500",
-              green: "bg-green-500",
-              purple: "bg-purple-500",
-              orange: "bg-orange-500",
-            };
+      {/* Stats Grid - Compact Mobile Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-4 mb-4 sm:mb-6">
+        {stats.map((stat) => {
+          // Check if user has permission to view this stat
+          if (!can(stat.permission)) return null;
 
-            return (
-              <Card
-                key={stat.title}
-                className="hover:shadow-lg transition-shadow"
-              >
+          const Icon = stat.icon;
+          const colorClasses = {
+            blue: "from-blue-500 to-blue-600",
+            green: "from-green-500 to-green-600",
+            purple: "from-purple-500 to-purple-600",
+            orange: "from-orange-500 to-orange-600",
+          };
+
+          return (
+            <Card key={stat.title} padding="sm" className="shadow-professional">
+              <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">
-                      {stat.title}
-                    </p>
-                    <p className="text-3xl font-bold text-gray-900 mt-2">
-                      {stat.value}
-                    </p>
-                  </div>
                   <div
-                    className={`p-3 rounded-full ${
+                    className={`p-1.5 sm:p-2 rounded-lg bg-gradient-to-br ${
                       colorClasses[stat.color as keyof typeof colorClasses]
-                    }`}
+                    } shadow-sm`}
                   >
-                    <Icon className="w-6 h-6 text-white" />
+                    <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   </div>
+                  <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
+                    {stat.value}
+                  </p>
                 </div>
-              </Card>
-            );
-          })}
+                <p className="text-[10px] sm:text-xs font-semibold text-gray-600 truncate">
+                  {stat.title}
+                </p>
+              </div>
+            </Card>
+          );
+        })}
       </div>
 
-      {/* Vacation Summary - Full Width for Best Experience */}
-      <div className="mb-8">
+      {/* Vacation Summary - Compact Mobile */}
+      <div className="mb-4 sm:mb-6">
         <VacationSummaryCard />
       </div>
 
-      {/* Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Vacations */}
-        <Card title="Recent Vacation Requests" className="h-fit">
+      {/* Recent Activity - Compact Mobile Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
+        {/* Recent Vacations - Compact Cards */}
+        <Card
+          title={t("dashboard.recentVacations")}
+          padding="sm"
+          className="h-fit"
+        >
           {vacations && vacations.length > 0 ? (
-            <div className="space-y-3">
+            <div className="space-y-2">
               {vacations.slice(0, 5).map((vacation: any) => (
                 <div
                   key={vacation._id}
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                  className="flex items-center justify-between p-2 sm:p-2.5 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg hover:from-blue-50 hover:to-blue-100 active:scale-[0.98] transition-all duration-200 cursor-pointer"
                 >
-                  <div>
-                    <p className="font-medium text-gray-900">
-                      {vacation.vacationType}
+                  <div className="flex-1 min-w-0 mr-2">
+                    <p className="text-xs sm:text-sm font-semibold text-gray-900 truncate">
+                      {t(`vacation.types.${vacation.vacationType}`)}
                     </p>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-[10px] sm:text-xs text-gray-600 truncate">
                       {new Date(vacation.startDate).toLocaleDateString()} -{" "}
                       {new Date(vacation.endDate).toLocaleDateString()}
                     </p>
                   </div>
                   <Badge
+                    size="sm"
                     variant={
                       vacation.status === "approved"
                         ? "success"
@@ -169,30 +178,37 @@ export default function DashboardPage() {
                         : "warning"
                     }
                   >
-                    {vacation.status.replace(/_/g, " ")}
+                    {t(`vacation.status.${vacation.status}`)}
                   </Badge>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-gray-500 text-center py-8">
-              No vacation requests yet
-            </p>
+            <div className="text-center py-6">
+              <CalendarDaysIcon className="w-10 h-10 sm:w-12 sm:h-12 mx-auto text-gray-300 mb-2" />
+              <p className="text-xs sm:text-sm text-gray-500">
+                {t("dashboard.noVacations")}
+              </p>
+            </div>
           )}
         </Card>
 
-        {/* Quick Actions */}
-        <Card title="Quick Actions" className="h-fit">
-          <div className="grid grid-cols-2 gap-4">
+        {/* Quick Actions - Compact Mobile Grid */}
+        <Card
+          title={t("dashboard.quickActions.title")}
+          padding="sm"
+          className="h-fit"
+        >
+          <div className="grid grid-cols-2 gap-2">
             <button
               onClick={() =>
                 (window.location.href = "/dashboard/vacations/apply")
               }
-              className="p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors text-center"
+              className="tap-target p-2 sm:p-3 bg-gradient-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 active:scale-95 rounded-lg transition-all duration-200 text-center border border-blue-200"
             >
-              <CalendarDaysIcon className="w-8 h-8 mx-auto text-blue-600 mb-2" />
-              <p className="text-sm font-medium text-gray-900">
-                Apply for Vacation
+              <CalendarDaysIcon className="w-6 h-6 sm:w-7 sm:h-7 mx-auto text-blue-600 mb-1" />
+              <p className="text-[10px] sm:text-xs font-semibold text-gray-900">
+                {t("dashboard.quickActions.applyVacation")}
               </p>
             </button>
 
@@ -201,11 +217,11 @@ export default function DashboardPage() {
                 onClick={() =>
                   (window.location.href = "/dashboard/vacations/pending-chief")
                 }
-                className="p-4 bg-yellow-50 hover:bg-yellow-100 rounded-lg transition-colors text-center"
+                className="tap-target p-2 sm:p-3 bg-gradient-to-br from-yellow-50 to-yellow-100 hover:from-yellow-100 hover:to-yellow-200 active:scale-95 rounded-lg transition-all duration-200 text-center border border-yellow-200"
               >
-                <CalendarDaysIcon className="w-8 h-8 mx-auto text-yellow-600 mb-2" />
-                <p className="text-sm font-medium text-gray-900">
-                  Vacation Approvals
+                <CalendarDaysIcon className="w-6 h-6 sm:w-7 sm:h-7 mx-auto text-yellow-600 mb-1" />
+                <p className="text-[10px] sm:text-xs font-semibold text-gray-900">
+                  {t("dashboard.quickActions.vacationApprovals")}
                 </p>
               </button>
             )}
@@ -216,45 +232,49 @@ export default function DashboardPage() {
                   (window.location.href =
                     "/dashboard/vacations/pending-principal")
                 }
-                className="p-4 bg-red-50 hover:bg-red-100 rounded-lg transition-colors text-center"
+                className="tap-target p-2 sm:p-3 bg-gradient-to-br from-red-50 to-red-100 hover:from-red-100 hover:to-red-200 active:scale-95 rounded-lg transition-all duration-200 text-center border border-red-200"
               >
-                <CalendarDaysIcon className="w-8 h-8 mx-auto text-red-600 mb-2" />
-                <p className="text-sm font-medium text-gray-900">
-                  Final Approvals
+                <CalendarDaysIcon className="w-6 h-6 sm:w-7 sm:h-7 mx-auto text-red-600 mb-1" />
+                <p className="text-[10px] sm:text-xs font-semibold text-gray-900">
+                  {t("dashboard.quickActions.finalApprovals")}
                 </p>
               </button>
             )}
 
-            {canViewUsers && (
+            {can(Permission.VIEW_ALL_USERS) && (
               <button
                 onClick={() => (window.location.href = "/dashboard/users")}
-                className="p-4 bg-green-50 hover:bg-green-100 rounded-lg transition-colors text-center"
+                className="tap-target p-2 sm:p-3 bg-gradient-to-br from-green-50 to-green-100 hover:from-green-100 hover:to-green-200 active:scale-95 rounded-lg transition-all duration-200 text-center border border-green-200"
               >
-                <UsersIcon className="w-8 h-8 mx-auto text-green-600 mb-2" />
-                <p className="text-sm font-medium text-gray-900">
-                  Manage Users
+                <UsersIcon className="w-6 h-6 sm:w-7 sm:h-7 mx-auto text-green-600 mb-1" />
+                <p className="text-[10px] sm:text-xs font-semibold text-gray-900">
+                  {t("dashboard.quickActions.manageUsers")}
                 </p>
               </button>
             )}
 
-            {canViewDepartments && (
+            {can(Permission.VIEW_DEPARTMENTS) && (
               <button
                 onClick={() =>
                   (window.location.href = "/dashboard/departments")
                 }
-                className="p-4 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors text-center"
+                className="tap-target p-2 sm:p-3 bg-gradient-to-br from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 active:scale-95 rounded-lg transition-all duration-200 text-center border border-purple-200"
               >
-                <BuildingOfficeIcon className="w-8 h-8 mx-auto text-purple-600 mb-2" />
-                <p className="text-sm font-medium text-gray-900">Departments</p>
+                <BuildingOfficeIcon className="w-6 h-6 sm:w-7 sm:h-7 mx-auto text-purple-600 mb-1" />
+                <p className="text-[10px] sm:text-xs font-semibold text-gray-900">
+                  {t("dashboard.quickActions.departments")}
+                </p>
               </button>
             )}
 
             <button
               onClick={() => (window.location.href = "/dashboard/vacations")}
-              className="p-4 bg-orange-50 hover:bg-orange-100 rounded-lg transition-colors text-center"
+              className="tap-target p-2 sm:p-3 bg-gradient-to-br from-orange-50 to-orange-100 hover:from-orange-100 hover:to-orange-200 active:scale-95 rounded-lg transition-all duration-200 text-center border border-orange-200"
             >
-              <ChartBarIcon className="w-8 h-8 mx-auto text-orange-600 mb-2" />
-              <p className="text-sm font-medium text-gray-900">My Vacations</p>
+              <ChartBarIcon className="w-6 h-6 sm:w-7 sm:h-7 mx-auto text-orange-600 mb-1" />
+              <p className="text-[10px] sm:text-xs font-semibold text-gray-900">
+                {t("dashboard.quickActions.myVacations")}
+              </p>
             </button>
           </div>
         </Card>

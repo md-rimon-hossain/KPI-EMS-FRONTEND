@@ -2,11 +2,17 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import {
   useCreateDepartmentMutation,
   useGetAllDepartmentsQuery,
 } from "@/store/departmentApi";
 import { useGetAllUsersQuery } from "@/store/userApi";
+import { Permission } from "@/lib/permissions";
+import {
+  PermissionGuard,
+  InfoTooltip,
+} from "@/components/PermissionComponents";
 import Card from "@/components/Card";
 import Input from "@/components/Input";
 import Button from "@/components/Button";
@@ -14,6 +20,7 @@ import toast from "react-hot-toast";
 
 export default function CreateDepartmentPage() {
   const router = useRouter();
+  const { t } = useTranslation();
   const [createDepartment, { isLoading }] = useCreateDepartmentMutation();
   const { data: usersData } = useGetAllUsersQuery();
   const users = usersData?.data?.users || [];
@@ -45,7 +52,8 @@ export default function CreateDepartmentPage() {
   const validate = () => {
     const newErrors: any = {};
 
-    if (!formData.name.trim()) newErrors.name = "Department name is required";
+    if (!formData.name.trim())
+      newErrors.name = t("department.departmentName") + " is required";
     if (!formData.code.trim()) newErrors.code = "Department code is required";
 
     setErrors(newErrors);
@@ -72,108 +80,115 @@ export default function CreateDepartmentPage() {
       }
 
       await createDepartment(payload).unwrap();
-      toast.success("Department created successfully");
+      toast.success(t("department.createSuccess"));
       router.push("/dashboard/departments");
     } catch (error: any) {
-      toast.error(error?.data?.message || "Failed to create department");
+      toast.error(error?.data?.message || t("department.createError"));
     }
   };
 
   return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">
-          Create New Department
-        </h1>
-        <p className="text-gray-600 mt-1">
-          Add a new academic department to the system
-        </p>
-      </div>
-
-      <Card>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Input
-            label="Department Name"
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            error={errors.name}
-            placeholder="e.g., Computer Science & Technology"
-            required
-          />
-
-          <Input
-            label="Department Code"
-            type="text"
-            name="code"
-            value={formData.code}
-            onChange={handleChange}
-            error={errors.code}
-            placeholder="e.g., CST"
-            helperText="Short code for the department (will be converted to uppercase)"
-            required
-          />
-
+    <PermissionGuard permission={Permission.CREATE_DEPARTMENT}>
+      <div>
+        <div className="mb-6 flex items-start gap-2">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Chief Instructor
-            </label>
-            <select
-              name="chiefInstructor"
-              value={formData.chiefInstructor}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Select Chief Instructor (Optional)</option>
-              {chiefInstructors?.map((user: any) => (
-                <option key={user._id} value={user._id}>
-                  {user.name} ({user.email})
-                </option>
-              ))}
-            </select>
-            {chiefInstructors.length === 0 && (
-              <p className="mt-1 text-sm text-gray-500">
-                No chief instructors available. Create a user with Chief
-                Instructor role first.
-              </p>
-            )}
+            <h1 className="text-3xl font-bold text-gray-900">
+              {t("department.create")}
+            </h1>
+            <p className="text-gray-600 mt-1">
+              {t("department.createSubtitle") ||
+                "Add a new department to the organization"}
+            </p>
           </div>
+          <InfoTooltip
+            text={
+              t("department.createTooltip") ||
+              "Create a new organizational department with a chief instructor"
+            }
+          />
+        </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Description
-            </label>
-            <textarea
-              name="description"
-              value={formData.description}
+        <Card>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Input
+              label={t("department.departmentName")}
+              type="text"
+              name="name"
+              value={formData.name}
               onChange={handleChange}
-              rows={4}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Brief description about the department..."
+              error={errors.name}
+              placeholder={t("department.namePlaceholder")}
+              required
             />
-          </div>
 
-          <div className="flex gap-3 pt-4">
-            <Button
-              type="submit"
-              variant="primary"
-              loading={isLoading}
-              fullWidth
-            >
-              Create Department
-            </Button>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => router.push("/dashboard/departments")}
-              fullWidth
-            >
-              Cancel
-            </Button>
-          </div>
-        </form>
-      </Card>
-    </div>
+            <Input
+              label={t("department.departmentCode", "Code")}
+              type="text"
+              name="code"
+              value={formData.code}
+              onChange={handleChange}
+              error={errors.code}
+              placeholder="CST"
+              helperText="Short code"
+              required
+            />
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {t("roles.chief_instructor")}
+              </label>
+              <select
+                name="chiefInstructor"
+                value={formData.chiefInstructor}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">
+                  {t("common.select")} {t("roles.chief_instructor")}
+                </option>
+                {chiefInstructors?.map((user: any) => (
+                  <option key={user._id} value={user._id}>
+                    {user.name} ({user.email})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {t("department.description")}
+              </label>
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                rows={4}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder={t("department.descriptionPlaceholder")}
+              />
+            </div>
+
+            <div className="flex gap-3 pt-4">
+              <Button
+                type="submit"
+                variant="primary"
+                loading={isLoading}
+                fullWidth
+              >
+                {t("common.create")}
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => router.push("/dashboard/departments")}
+                fullWidth
+              >
+                {t("common.cancel")}
+              </Button>
+            </div>
+          </form>
+        </Card>
+      </div>
+    </PermissionGuard>
   );
 }

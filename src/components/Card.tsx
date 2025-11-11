@@ -22,27 +22,34 @@ export default function Card({
 }: CardProps) {
   const paddingClasses = {
     none: "",
-    sm: "p-4",
-    md: "p-6",
-    lg: "p-8",
+    sm: "p-2 sm:p-3",
+    md: "p-3 sm:p-4 lg:p-6",
+    lg: "p-4 sm:p-6 lg:p-8",
   };
 
   return (
     <div
       className={clsx(
-        "bg-white rounded-lg shadow-md border border-gray-200",
+        "bg-white rounded-lg shadow-sm border border-gray-200 transition-all duration-200",
         paddingClasses[padding],
-        onClick && "cursor-pointer hover:shadow-lg transition-shadow",
+        onClick &&
+          "cursor-pointer hover:shadow-md active:shadow-sm active:scale-[0.99]",
         className
       )}
       onClick={onClick}
     >
       {(title || subtitle) && (
-        <div className="mb-4">
+        <div className="mb-2 sm:mb-3">
           {title && (
-            <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900">
+              {title}
+            </h3>
           )}
-          {subtitle && <p className="text-sm text-gray-600 mt-1">{subtitle}</p>}
+          {subtitle && (
+            <p className="text-xs sm:text-sm text-gray-600 mt-0.5 sm:mt-1">
+              {subtitle}
+            </p>
+          )}
         </div>
       )}
       {children}

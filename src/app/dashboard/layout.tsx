@@ -5,6 +5,7 @@ import { useAppSelector } from "@/store/hooks";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
+import MobileBottomNav from "@/components/MobileBottomNav";
 import EmailVerificationBanner from "@/components/EmailVerificationBanner";
 
 export default function DashboardLayout({
@@ -32,12 +33,16 @@ export default function DashboardLayout({
       <Navbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <div className="lg:pl-64 pt-16">
-        <main className="p-4 md:p-6 lg:p-8">
+      {/* Main Content with Mobile Bottom Nav Padding */}
+      <div className="lg:pl-60 pt-20 sm:pt-20">
+        <main className="mobile-container p-compact min-h-[calc(100vh-3rem)] sm:min-h-[calc(100vh-3.5rem)] pb-20 lg:pb-4">
           <EmailVerificationBanner />
           {children}
         </main>
       </div>
+
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav />
     </div>
   );
 }

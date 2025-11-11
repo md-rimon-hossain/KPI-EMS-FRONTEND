@@ -2,13 +2,20 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import { useChangePasswordMutation } from "@/store/authApi";
+import { Permission } from "@/lib/permissions";
+import {
+  PermissionGuard,
+  InfoTooltip,
+} from "@/components/PermissionComponents";
 import Card from "@/components/Card";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 import toast from "react-hot-toast";
 
 export default function SettingsPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [changePassword, { isLoading }] = useChangePasswordMutation();
 
@@ -31,17 +38,17 @@ export default function SettingsPage() {
     const newErrors: any = {};
 
     if (!formData.currentPassword) {
-      newErrors.currentPassword = "Current password is required";
+      newErrors.currentPassword = t("settings.currentPasswordRequired");
     }
     if (!formData.newPassword) {
-      newErrors.newPassword = "New password is required";
+      newErrors.newPassword = t("settings.newPasswordRequired");
     } else if (formData.newPassword.length < 6) {
-      newErrors.newPassword = "Password must be at least 6 characters";
+      newErrors.newPassword = t("settings.passwordMinLength");
     }
     if (!formData.confirmPassword) {
-      newErrors.confirmPassword = "Please confirm your new password";
+      newErrors.confirmPassword = t("settings.confirmPasswordRequired");
     } else if (formData.newPassword !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
+      newErrors.confirmPassword = t("settings.passwordMismatch");
     }
 
     setErrors(newErrors);
@@ -59,88 +66,98 @@ export default function SettingsPage() {
         newPassword: formData.newPassword,
       }).unwrap();
 
-      toast.success("Password changed successfully");
+      toast.success(t("settings.passwordChangeSuccess"));
       setFormData({
         currentPassword: "",
         newPassword: "",
         confirmPassword: "",
       });
     } catch (error: any) {
-      toast.error(error?.data?.message || "Failed to change password");
+      toast.error(error?.data?.message || t("settings.passwordChangeError"));
     }
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-        <p className="text-gray-600 mt-1">
-          Manage your account settings and preferences
-        </p>
-      </div>
-
-      <Card>
-        <h2 className="text-xl font-semibold text-gray-900 mb-6">
-          Change Password
-        </h2>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <Input
-            label="Current Password"
-            type="password"
-            name="currentPassword"
-            value={formData.currentPassword}
-            onChange={handleChange}
-            error={errors.currentPassword}
-            required
-          />
-
-          <Input
-            label="New Password"
-            type="password"
-            name="newPassword"
-            value={formData.newPassword}
-            onChange={handleChange}
-            error={errors.newPassword}
-            helperText="Minimum 6 characters"
-            required
-          />
-
-          <Input
-            label="Confirm New Password"
-            type="password"
-            name="confirmPassword"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            error={errors.confirmPassword}
-            required
-          />
-
-          <div className="pt-4">
-            <Button
-              type="submit"
-              variant="primary"
-              loading={isLoading}
-              fullWidth
-            >
-              Update Password
-            </Button>
+    <PermissionGuard permission={Permission.CHANGE_PASSWORD}>
+      <div className="max-w-2xl mx-auto">
+        <div className="mb-6 flex items-start gap-2">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">
+              {t("settings.title")}
+            </h1>
+            <p className="text-gray-600 mt-1">{t("settings.subtitle")}</p>
           </div>
-        </form>
-      </Card>
+          <InfoTooltip
+            text={
+              t("settings.changePasswordTooltip") ||
+              "Change your account password for security"
+            }
+          />
+        </div>
 
-      <Card className="mt-6 bg-yellow-50 border-yellow-200">
-        <h3 className="text-lg font-semibold text-yellow-900 mb-2">
-          Security Tips
-        </h3>
-        <ul className="list-disc list-inside space-y-2 text-sm text-yellow-700">
-          <li>Use a strong password with at least 8 characters</li>
-          <li>Include numbers, letters, and special characters</li>
-          <li>Don't reuse passwords from other accounts</li>
-          <li>Change your password regularly</li>
-          <li>Never share your password with anyone</li>
-        </ul>
-      </Card>
-    </div>
+        <Card>
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">
+            {t("settings.changePassword")}
+          </h2>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <Input
+              label={t("settings.currentPassword")}
+              type="password"
+              name="currentPassword"
+              value={formData.currentPassword}
+              onChange={handleChange}
+              error={errors.currentPassword}
+              required
+            />
+
+            <Input
+              label={t("settings.newPassword")}
+              type="password"
+              name="newPassword"
+              value={formData.newPassword}
+              onChange={handleChange}
+              error={errors.newPassword}
+              helperText={t("settings.minCharacters")}
+              required
+            />
+
+            <Input
+              label={t("settings.confirmNewPassword")}
+              type="password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              error={errors.confirmPassword}
+              required
+            />
+
+            <div className="pt-4">
+              <Button
+                type="submit"
+                variant="primary"
+                loading={isLoading}
+                fullWidth
+              >
+                {t("settings.updatePassword")}
+              </Button>
+            </div>
+          </form>
+        </Card>
+
+        <Card className="mt-6 bg-yellow-50 border-yellow-200">
+          <h3 className="text-lg font-semibold text-yellow-900 mb-2">
+            {t("settings.securityTips")}
+          </h3>
+          <ul className="list-disc list-inside space-y-2 text-sm text-yellow-700">
+            <li>{t("settings.tip1")}</li>
+            <li>{t("settings.tip2")}</li>
+            <li>{t("settings.tip3")}</li>
+            <li>{t("settings.tip4")}</li>
+            <li>{t("settings.tip5")}</li>
+          </ul>
+        </Card>
+      </div>
+    </PermissionGuard>
   );
 }

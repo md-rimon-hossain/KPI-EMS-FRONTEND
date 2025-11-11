@@ -20,17 +20,27 @@ export default function Loading({
   };
 
   const spinner = (
-    <div className="flex flex-col items-center justify-center gap-3">
-      <div
-        className={`animate-spin rounded-full border-4 border-gray-200 border-t-blue-600 ${sizes[size]}`}
-      ></div>
-      {text && <p className="text-gray-600 text-sm">{text}</p>}
+    <div className="flex flex-col items-center justify-center gap-2 sm:gap-3">
+      <div className="relative">
+        <div
+          className={`animate-spin rounded-full border-4 border-gray-200 border-t-blue-600 ${sizes[size]}`}
+        ></div>
+        {/* Pulse effect for better mobile visibility */}
+        <div
+          className={`absolute inset-0 rounded-full border-4 border-blue-400 opacity-20 animate-ping ${sizes[size]}`}
+        ></div>
+      </div>
+      {text && (
+        <p className="text-gray-700 text-xs sm:text-sm font-semibold animate-pulse">
+          {text}
+        </p>
+      )}
     </div>
   );
 
   if (fullScreen) {
     return (
-      <div className="fixed inset-0 bg-white bg-opacity-90 flex items-center justify-center z-50">
+      <div className="fixed inset-0 bg-gradient-to-b from-white to-gray-50 backdrop-blur-sm flex items-center justify-center z-50 fade-in">
         {spinner}
       </div>
     );
@@ -49,23 +59,23 @@ export function LoadingOverlay({ text }: { text?: string }) {
 
 export function SkeletonCard() {
   return (
-    <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6 animate-pulse">
-      <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
-      <div className="h-3 bg-gray-200 rounded w-1/2 mb-2"></div>
-      <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6">
+      <div className="skeleton h-4 sm:h-5 w-3/4 mb-3 sm:mb-4"></div>
+      <div className="skeleton h-3 sm:h-4 w-1/2 mb-2"></div>
+      <div className="skeleton h-3 sm:h-4 w-2/3"></div>
     </div>
   );
 }
 
 export function SkeletonTable({ rows = 5 }: { rows?: number }) {
   return (
-    <div className="animate-pulse">
+    <div className="space-y-3">
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="border-b border-gray-200 py-4">
-          <div className="flex gap-4">
-            <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-            <div className="h-4 bg-gray-200 rounded w-1/3"></div>
-            <div className="h-4 bg-gray-200 rounded w-1/5"></div>
+        <div key={i} className="border-b border-gray-100 py-3">
+          <div className="flex gap-2 sm:gap-4">
+            <div className="skeleton h-3 sm:h-4 w-1/4"></div>
+            <div className="skeleton h-3 sm:h-4 w-1/3"></div>
+            <div className="skeleton h-3 sm:h-4 w-1/5"></div>
           </div>
         </div>
       ))}

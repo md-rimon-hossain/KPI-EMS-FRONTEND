@@ -54,44 +54,56 @@ export default function Modal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      {/* Backdrop */}
+    <>
+      {/* Backdrop with fade-in animation */}
       <div
-        className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+        className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity duration-200"
         onClick={onClose}
       ></div>
 
-      {/* Modal */}
-      <div className="flex min-h-full items-center justify-center p-4">
-        <div
-          className={clsx(
-            "relative bg-white rounded-lg shadow-xl w-full",
-            sizes[size]
-          )}
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* Header */}
-          {(title || showCloseButton) && (
-            <div className="flex items-center justify-between p-6 border-b border-gray-200">
-              {title && (
-                <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
-              )}
-              {showCloseButton && (
-                <button
-                  onClick={onClose}
-                  className="text-gray-400 hover:text-gray-600 transition-colors"
-                >
-                  <XMarkIcon className="h-6 w-6" />
-                </button>
-              )}
-            </div>
-          )}
+      {/* Modal Container */}
+      <div className="fixed inset-0 z-50 overflow-y-auto pointer-events-none">
+        {/* Modal - Desktop: Centered, Mobile: Bottom Sheet */}
+        <div className="flex min-h-full items-end sm:items-center justify-center p-0 sm:p-4 pointer-events-none">
+          <div
+            className={clsx(
+              "relative bg-white shadow-2xl w-full modal-transition gpu-accelerated pointer-events-auto",
+              "rounded-t-2xl sm:rounded-lg",
+              "max-h-[90vh] overflow-hidden",
+              sizes[size]
+            )}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Mobile Swipe Indicator */}
+            <div className="swipe-indicator sm:hidden" />
 
-          {/* Content */}
-          <div className="p-6">{children}</div>
+            {/* Header - Compact on Mobile */}
+            {(title || showCloseButton) && (
+              <div className="flex items-center justify-between p-3 sm:p-4 lg:p-6 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+                {title && (
+                  <h3 className="text-base sm:text-lg lg:text-xl font-bold text-gray-900 truncate pr-2">
+                    {title}
+                  </h3>
+                )}
+                {showCloseButton && (
+                  <button
+                    onClick={onClose}
+                    className="tap-target p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all active:scale-95"
+                  >
+                    <XMarkIcon className="h-5 w-5 sm:h-6 sm:w-6" />
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* Content - Compact on Mobile with Smooth Scroll */}
+            <div className="p-3 sm:p-4 lg:p-6 overflow-y-auto smooth-scroll max-h-[calc(90vh-120px)]">
+              {children}
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -128,13 +140,17 @@ export function ConfirmModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="sm">
       <div className="text-center">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">{title}</h3>
-        <div className="text-gray-600 mb-6">{message}</div>
-        <div className="flex gap-3 justify-end">
+        <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-2">
+          {title}
+        </h3>
+        <div className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
+          {message}
+        </div>
+        <div className="flex gap-2 sm:gap-3 justify-end">
           <button
             onClick={onClose}
             disabled={loading}
-            className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors disabled:opacity-50"
+            className="tap-target flex-1 sm:flex-none px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-700 bg-gray-100 hover:bg-gray-200 active:bg-gray-300 rounded-lg font-semibold transition-all active:scale-95 disabled:opacity-50"
           >
             {cancelText}
           </button>
@@ -142,7 +158,7 @@ export function ConfirmModal({
             onClick={onConfirm}
             disabled={loading}
             className={clsx(
-              "px-4 py-2 text-white rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50",
+              "tap-target flex-1 sm:flex-none px-3 sm:px-4 py-2 text-sm sm:text-base text-white rounded-lg font-semibold transition-all active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 shadow-sm",
               variantClasses[variant]
             )}
           >
