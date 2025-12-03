@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter, useParams } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import {
   useGetVacationByIdQuery,
   useReviewByChiefMutation,
@@ -16,6 +17,7 @@ import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
 
 export default function VacationDetailsPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const params = useParams();
   const id = params.id as string;
@@ -48,7 +50,15 @@ export default function VacationDetailsPage() {
       return;
     }
 
+    // Validate vacation ID
+    if (!vacation._id) {
+      toast.error("Invalid vacation ID");
+      console.error("Vacation object missing _id:", vacation);
+      return;
+    }
+
     try {
+      console.log("Reviewing vacation with ID:", vacation._id);
       if (user?.role === "chief_instructor") {
         await reviewByChief({
           id: vacation._id,
@@ -78,6 +88,7 @@ export default function VacationDetailsPage() {
           : "/dashboard/vacations/pending-principal"
       );
     } catch (error: any) {
+      console.error("Review error:", error);
       toast.error(error?.data?.message || "Failed to review vacation");
     }
   };
@@ -114,7 +125,7 @@ export default function VacationDetailsPage() {
   if (!vacation) {
     return (
       <div className="p-6 text-center">
-        <p className="text-gray-600">Vacation request not found</p>
+        <p className="text-gray-600">{t("vacation.messages.notFound")}</p>
         <Button
           variant="primary"
           onClick={() => router.push("/dashboard/vacations")}

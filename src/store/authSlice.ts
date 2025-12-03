@@ -2,10 +2,19 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export enum UserRole {
   SUPER_ADMIN = "super_admin",
+  REGISTRAR_HEAD = "registrar_head",
   PRINCIPAL = "principal",
+  VICE_PRINCIPAL = "vice_principal",
+  GENERAL_HEAD = "general_head",
   GENERAL_SHAKHA = "general_shakha",
   CHIEF_INSTRUCTOR = "chief_instructor",
   INSTRUCTOR = "instructor",
+  CRAFT_INSTRUCTOR = "craft_instructor",
+  ASSISTANT_INSTRUCTOR = "assistant_instructor",
+  OFFICE_STAFF = "office_staff",
+  LAB_ASSISTANT = "lab_assistant",
+  LIBRARY_STAFF = "library_staff",
+  OTHER_EMPLOYEE = "other_employee",
 }
 
 export interface User {
@@ -19,6 +28,7 @@ export interface User {
     code: string;
   };
   phone?: string;
+  profileImage?: string;
   vacationBalance: number;
   rewardVacationBalance?: number;
   lastAnnualVacationReset?: string;

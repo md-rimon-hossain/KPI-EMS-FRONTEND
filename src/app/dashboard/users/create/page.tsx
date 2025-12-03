@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { useCreateUserMutation } from "@/store/userApi";
@@ -14,6 +14,7 @@ import Card from "@/components/Card";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 import GmailVerification from "@/components/GmailVerification";
+import { PhotoIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
 
 export default function CreateUserPage() {
@@ -57,6 +58,9 @@ export default function CreateUserPage() {
   const [errors, setErrors] = useState<any>({});
   const [gmailVerified, setGmailVerified] = useState(false);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -87,6 +91,47 @@ export default function CreateUserPage() {
     }
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file size (5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("Image size must be less than 5MB");
+        return;
+      }
+
+      // Validate file type
+      const validTypes = [
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "image/gif",
+        "image/webp",
+      ];
+      if (!validTypes.includes(file.type)) {
+        toast.error("Only image files are allowed (JPEG, JPG, PNG, GIF, WEBP)");
+        return;
+      }
+
+      setImageFile(file);
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setImagePreview("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   const validate = () => {
     const newErrors: any = {};
 
@@ -108,6 +153,87 @@ export default function CreateUserPage() {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validate()) {
+      toast.error("Please complete all required fields");
+      return;
+    }
+
+    try {
+      // Use FormData to send file
+      const formDataToSend = new FormData();
+
+      // Basic required fields
+      formDataToSend.append("name", formData.name);
+      formDataToSend.append("email", formData.email);
+      formDataToSend.append("password", formData.password);
+      formDataToSend.append("role", formData.role);
+      formDataToSend.append("vacationBalance", formData.vacationBalance);
+      formDataToSend.append("gmailVerified", gmailVerified.toString());
+
+      // Profile image
+      if (imageFile) {
+        formDataToSend.append("profileImage", imageFile);
+      }
+
+      // Optional fields
+      if (formData.department)
+        formDataToSend.append("department", formData.department);
+      if (formData.phone) formDataToSend.append("phone", formData.phone);
+      if (formData.jobTitle)
+        formDataToSend.append("jobTitle", formData.jobTitle);
+      if (formData.position)
+        formDataToSend.append("position", formData.position);
+      if (formData.departmentWorkArea)
+        formDataToSend.append(
+          "departmentWorkArea",
+          formData.departmentWorkArea
+        );
+      if (formData.employmentStatus)
+        formDataToSend.append("employmentStatus", formData.employmentStatus);
+      if (formData.startDate)
+        formDataToSend.append("startDate", formData.startDate);
+      if (formData.jobDescription)
+        formDataToSend.append("jobDescription", formData.jobDescription);
+      if (formData.presentAddress)
+        formDataToSend.append("presentAddress", formData.presentAddress);
+      if (formData.permanentAddress)
+        formDataToSend.append("permanentAddress", formData.permanentAddress);
+      if (formData.nidNumber)
+        formDataToSend.append("nidNumber", formData.nidNumber);
+      if (formData.dateOfBirth)
+        formDataToSend.append("dateOfBirth", formData.dateOfBirth);
+      if (formData.bloodGroup)
+        formDataToSend.append("bloodGroup", formData.bloodGroup);
+
+      // Emergency contact (as JSON string if any field is filled)
+      if (formData.emergencyContactName || formData.emergencyContactPhone) {
+        const emergencyContact = {
+          name: formData.emergencyContactName,
+          relationship: formData.emergencyContactRelationship,
+          phone: formData.emergencyContactPhone,
+        };
+        formDataToSend.append(
+          "emergencyContact",
+          JSON.stringify(emergencyContact)
+        );
+      }
+
+      await createUser(formDataToSend).unwrap();
+      toast.success(
+        isSuperAdmin
+          ? "Super Admin created successfully!"
+          : "User created successfully! Email is already verified via OTP."
+      );
+      router.push("/dashboard/users");
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to create user");
+    }
+  };
+
+  // OLD CODE - keeping for reference
+  const handleSubmitOld = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validate()) {
@@ -158,15 +284,10 @@ export default function CreateUserPage() {
         };
       }
 
-      await createUser(userData).unwrap();
-      toast.success(
-        isSuperAdmin
-          ? "Super Admin created successfully!"
-          : "User created successfully! Email is already verified via OTP."
-      );
-      router.push("/dashboard/users");
+      // OLD: await createUser(userData).unwrap();
+      // Replaced with FormData approach above
     } catch (error: any) {
-      toast.error(error?.data?.message || "Failed to create user");
+      // Already handled above
     }
   };
 
@@ -275,6 +396,10 @@ export default function CreateUserPage() {
                 <option value="general_shakha">
                   {t("roles.general_shakha")}
                 </option>
+                <option value="general_head">{t("roles.general_head")}</option>
+                <option value="vice_principal">
+                  {t("roles.vice_principal")}
+                </option>
                 <option value="principal">{t("roles.principal")}</option>
                 <option value="super_admin">{t("roles.super_admin")}</option>
               </select>
@@ -315,6 +440,56 @@ export default function CreateUserPage() {
                   : ""
               }
             >
+              {/* Profile Image Upload */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t("user.profileImage") || "Profile Image"}
+                </label>
+
+                {imagePreview && (
+                  <div className="relative w-32 h-32 mb-4">
+                    <img
+                      src={imagePreview}
+                      alt="Profile preview"
+                      className="w-full h-full object-cover rounded-lg border-2 border-gray-300"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                      disabled={!isSuperAdmin && !gmailVerified}
+                    >
+                      <XMarkIcon className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+
+                {!imagePreview && (
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-blue-500 transition-colors"
+                  >
+                    <PhotoIcon className="w-10 h-10 mx-auto text-gray-400 mb-2" />
+                    <p className="text-sm text-gray-600 mb-1">
+                      {t("inventory.uploadImage") || "Click to upload image"}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {t("inventory.imageInstructions") ||
+                        "PNG, JPG, GIF, WEBP up to 5MB"}
+                    </p>
+                  </div>
+                )}
+
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                  disabled={!isSuperAdmin && !gmailVerified}
+                />
+              </div>
+
               <Input
                 label="Full Name"
                 name="name"

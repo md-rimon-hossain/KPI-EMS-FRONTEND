@@ -543,7 +543,9 @@ export default function ApplyVacationPage() {
                       <p className="text-2xl font-bold text-blue-600">
                         {summary?.annualVacationBalance || 0}
                       </p>
-                      <p className="text-xs text-gray-600">days available</p>
+                      <p className="text-xs text-gray-600">
+                        {t("vacation.labels.daysAvailable")}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -593,7 +595,9 @@ export default function ApplyVacationPage() {
                         <p className="text-2xl font-bold text-amber-600">
                           {summary.rewardVacationBalance}
                         </p>
-                        <p className="text-xs text-gray-600">days available</p>
+                        <p className="text-xs text-gray-600">
+                          {t("vacation.labels.daysAvailable")}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -616,7 +620,9 @@ export default function ApplyVacationPage() {
                       </div>
                       <div className="text-right">
                         <p className="text-2xl font-bold text-gray-400">0</p>
-                        <p className="text-xs text-gray-500">days available</p>
+                        <p className="text-xs text-gray-500">
+                          {t("vacation.labels.daysAvailable")}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -735,7 +741,9 @@ export default function ApplyVacationPage() {
                         >
                           {workingDays}
                         </p>
-                        <p className="text-xs text-gray-600">working days</p>
+                        <p className="text-xs text-gray-600">
+                          {t("vacation.labels.workingDays").toLowerCase()}
+                        </p>
                       </div>
                     </div>
 

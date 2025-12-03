@@ -5,8 +5,10 @@
 
 export enum UserRole {
   SUPER_ADMIN = "super_admin",
+  REGISTRAR_HEAD = "registrar_head",
   PRINCIPAL = "principal",
   VICE_PRINCIPAL = "vice_principal",
+  GENERAL_HEAD = "general_head",
   GENERAL_SHAKHA = "general_shakha",
   CHIEF_INSTRUCTOR = "chief_instructor",
   INSTRUCTOR = "instructor",
@@ -57,6 +59,25 @@ export enum Permission {
   // System Settings
   MANAGE_SYSTEM_SETTINGS = "manage_system_settings",
   VIEW_SYSTEM_LOGS = "view_system_logs",
+
+  // Inventory Management
+  VIEW_INVENTORY = "view_inventory",
+  CREATE_INVENTORY = "create_inventory",
+  EDIT_INVENTORY = "edit_inventory",
+  DELETE_INVENTORY = "delete_inventory",
+
+  // Lab Management
+  VIEW_LABS = "view_labs",
+  CREATE_LAB = "create_lab",
+  EDIT_LAB = "edit_lab",
+  DELETE_LAB = "delete_lab",
+
+  // Loan Management
+  VIEW_LOANS = "view_loans",
+  VIEW_OWN_LOANS = "view_own_loans",
+  REQUEST_LOAN = "request_loan",
+  APPROVE_LOAN = "approve_loan",
+  RETURN_LOAN = "return_loan",
 }
 
 /**
@@ -94,6 +115,66 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.VIEW_STATISTICS,
     Permission.MANAGE_SYSTEM_SETTINGS,
     Permission.VIEW_SYSTEM_LOGS,
+    // Inventory & Lab & Loan Management (Full Access)
+    Permission.VIEW_INVENTORY,
+    Permission.CREATE_INVENTORY,
+    Permission.EDIT_INVENTORY,
+    Permission.DELETE_INVENTORY,
+    Permission.VIEW_LABS,
+    Permission.CREATE_LAB,
+    Permission.EDIT_LAB,
+    Permission.DELETE_LAB,
+    Permission.VIEW_LOANS,
+    Permission.VIEW_OWN_LOANS,
+    Permission.REQUEST_LOAN,
+    Permission.APPROVE_LOAN,
+    Permission.RETURN_LOAN,
+  ],
+
+  // Registrar Head - Full Admin Access (Register Branch)
+  [UserRole.REGISTRAR_HEAD]: [
+    // All permissions (same as Super Admin)
+    Permission.VIEW_ALL_USERS,
+    Permission.CREATE_USER,
+    Permission.EDIT_USER,
+    Permission.DELETE_USER,
+    Permission.MANAGE_USER_ROLES,
+    Permission.VIEW_DEPARTMENTS,
+    Permission.CREATE_DEPARTMENT,
+    Permission.EDIT_DEPARTMENT,
+    Permission.DELETE_DEPARTMENT,
+    Permission.APPLY_VACATION,
+    Permission.VIEW_OWN_VACATIONS,
+    Permission.VIEW_ALL_VACATIONS,
+    Permission.VIEW_DEPARTMENT_VACATIONS,
+    Permission.APPROVE_AS_CHIEF,
+    Permission.APPROVE_AS_PRINCIPAL,
+    Permission.REJECT_VACATION,
+    Permission.CANCEL_VACATION,
+    Permission.DOWNLOAD_VACATION_PDF,
+    Permission.VIEW_OWN_PROFILE,
+    Permission.EDIT_OWN_PROFILE,
+    Permission.VIEW_OTHERS_PROFILE,
+    Permission.CHANGE_PASSWORD,
+    Permission.VIEW_DASHBOARD,
+    Permission.VIEW_REPORTS,
+    Permission.VIEW_STATISTICS,
+    Permission.MANAGE_SYSTEM_SETTINGS,
+    Permission.VIEW_SYSTEM_LOGS,
+    // Inventory & Lab & Loan Management (Full Access)
+    Permission.VIEW_INVENTORY,
+    Permission.CREATE_INVENTORY,
+    Permission.EDIT_INVENTORY,
+    Permission.DELETE_INVENTORY,
+    Permission.VIEW_LABS,
+    Permission.CREATE_LAB,
+    Permission.EDIT_LAB,
+    Permission.DELETE_LAB,
+    Permission.VIEW_LOANS,
+    Permission.VIEW_OWN_LOANS,
+    Permission.REQUEST_LOAN,
+    Permission.APPROVE_LOAN,
+    Permission.RETURN_LOAN,
   ],
 
   // Principal - Top Management
@@ -117,6 +198,11 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.VIEW_DASHBOARD,
     Permission.VIEW_REPORTS,
     Permission.VIEW_STATISTICS,
+    // Inventory & Lab & Loan Management
+    Permission.VIEW_INVENTORY,
+    Permission.VIEW_LABS,
+    Permission.VIEW_LOANS,
+    Permission.APPROVE_LOAN,
   ],
 
   // Vice Principal - Senior Management
@@ -134,6 +220,10 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.VIEW_DASHBOARD,
     Permission.VIEW_REPORTS,
     Permission.VIEW_STATISTICS,
+    // Inventory & Lab & Loan Management
+    Permission.VIEW_INVENTORY,
+    Permission.VIEW_LABS,
+    Permission.VIEW_LOANS,
   ],
 
   // General Shakha - Administrative Office
@@ -152,6 +242,41 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.CHANGE_PASSWORD,
     Permission.VIEW_DASHBOARD,
     Permission.VIEW_STATISTICS,
+    // Inventory & Lab Management
+    Permission.VIEW_INVENTORY,
+    Permission.CREATE_INVENTORY,
+    Permission.EDIT_INVENTORY,
+    Permission.VIEW_LABS,
+    Permission.VIEW_LOANS,
+  ],
+
+  // General Head - Chief Instructor Level (General Branch)
+  [UserRole.GENERAL_HEAD]: [
+    Permission.VIEW_ALL_USERS,
+    Permission.VIEW_DEPARTMENTS,
+    Permission.APPLY_VACATION,
+    Permission.VIEW_OWN_VACATIONS,
+    Permission.VIEW_DEPARTMENT_VACATIONS,
+    Permission.APPROVE_AS_CHIEF,
+    Permission.REJECT_VACATION,
+    Permission.DOWNLOAD_VACATION_PDF,
+    Permission.VIEW_OWN_PROFILE,
+    Permission.EDIT_OWN_PROFILE,
+    Permission.VIEW_OTHERS_PROFILE,
+    Permission.CHANGE_PASSWORD,
+    Permission.VIEW_DASHBOARD,
+    Permission.VIEW_STATISTICS,
+    // Inventory & Lab & Loan Management (Department Level)
+    Permission.VIEW_INVENTORY,
+    Permission.CREATE_INVENTORY,
+    Permission.EDIT_INVENTORY,
+    Permission.VIEW_LABS,
+    Permission.CREATE_LAB,
+    Permission.EDIT_LAB,
+    Permission.VIEW_LOANS,
+    Permission.REQUEST_LOAN,
+    Permission.APPROVE_LOAN,
+    Permission.RETURN_LOAN,
   ],
 
   // Chief Instructor - Department Head
@@ -170,6 +295,17 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.CHANGE_PASSWORD,
     Permission.VIEW_DASHBOARD,
     Permission.VIEW_STATISTICS,
+    // Inventory & Lab & Loan Management (Department Level)
+    Permission.VIEW_INVENTORY,
+    Permission.CREATE_INVENTORY,
+    Permission.EDIT_INVENTORY,
+    Permission.VIEW_LABS,
+    Permission.CREATE_LAB,
+    Permission.EDIT_LAB,
+    Permission.VIEW_LOANS,
+    Permission.REQUEST_LOAN,
+    Permission.APPROVE_LOAN,
+    Permission.RETURN_LOAN,
   ],
 
   // Instructor - Teaching Staff
@@ -182,6 +318,10 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.EDIT_OWN_PROFILE,
     Permission.CHANGE_PASSWORD,
     Permission.VIEW_DASHBOARD,
+    // Loan Management
+    Permission.VIEW_LABS,
+    Permission.REQUEST_LOAN,
+    Permission.VIEW_OWN_LOANS,
   ],
 
   // Craft Instructor - Specialized Teaching
@@ -194,6 +334,12 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.EDIT_OWN_PROFILE,
     Permission.CHANGE_PASSWORD,
     Permission.VIEW_DASHBOARD,
+    // Inventory, Lab & Loan Management
+    Permission.VIEW_INVENTORY,
+    Permission.VIEW_LABS,
+    Permission.VIEW_LOANS,
+    Permission.REQUEST_LOAN,
+    Permission.VIEW_OWN_LOANS,
   ],
 
   // Assistant Instructor - Junior Teaching
@@ -206,6 +352,10 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.EDIT_OWN_PROFILE,
     Permission.CHANGE_PASSWORD,
     Permission.VIEW_DASHBOARD,
+    // Loan Management
+    Permission.VIEW_LABS,
+    Permission.REQUEST_LOAN,
+    Permission.VIEW_OWN_LOANS,
   ],
 
   // Office Staff - Administrative Support
@@ -230,6 +380,11 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.EDIT_OWN_PROFILE,
     Permission.CHANGE_PASSWORD,
     Permission.VIEW_DASHBOARD,
+    // Loan Management
+    Permission.VIEW_LABS,
+    Permission.REQUEST_LOAN,
+    Permission.VIEW_OWN_LOANS,
+    Permission.RETURN_LOAN,
   ],
 
   // Library Staff - Library Management
@@ -281,6 +436,18 @@ export const ROLE_DESCRIPTIONS: Record<
     ],
     limitations: [],
   },
+  [UserRole.REGISTRAR_HEAD]: {
+    title: "Registrar Head",
+    description: "Full admin access for Register branch operations",
+    canDo: [
+      "Manage all users and roles",
+      "Create and delete departments",
+      "Approve/reject all vacations",
+      "Access system settings",
+      "View all reports and statistics",
+    ],
+    limitations: [],
+  },
   [UserRole.PRINCIPAL]: {
     title: "Principal",
     description: "Institution head with top-level management access",
@@ -302,6 +469,21 @@ export const ROLE_DESCRIPTIONS: Record<
     ],
     limitations: [
       "Cannot approve/reject vacations",
+      "Cannot manage users",
+      "Cannot modify departments",
+    ],
+  },
+  [UserRole.GENERAL_HEAD]: {
+    title: "General Head",
+    description: "Chief instructor level access for General branch",
+    canDo: [
+      "First-level approval of department vacations",
+      "Manage inventory and labs",
+      "View department staff information",
+      "Monitor department statistics",
+    ],
+    limitations: [
+      "Can only approve within own department",
       "Cannot manage users",
       "Cannot modify departments",
     ],

@@ -2,7 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useGetMyVacationsQuery, VacationStatus } from "@/store/vacationApi";
+import {
+  useGetMyVacationsQuery,
+  VacationStatus,
+  Vacation,
+} from "@/store/vacationApi";
 import {
   CheckCircleIcon,
   ClockIcon,
@@ -10,13 +14,18 @@ import {
   CalendarDaysIcon,
   EyeIcon,
   PlusIcon,
+  PencilIcon,
 } from "@heroicons/react/24/outline";
 import { format } from "date-fns";
+import EditVacationModal from "@/components/EditVacationModal";
+import { useTranslation } from "react-i18next";
 
 export default function MyVacationsPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { data, isLoading, error } = useGetMyVacationsQuery();
   const [filter, setFilter] = useState<VacationStatus | "all">("all");
+  const [editingVacation, setEditingVacation] = useState<Vacation | null>(null);
 
   const vacations = data?.data?.vacations || [];
 
@@ -144,7 +153,9 @@ export default function MyVacationsPage() {
             <p className="text-2xl font-bold text-gray-900">
               {getStatusCount("all")}
             </p>
-            <p className="text-sm text-gray-600 mt-1">All Requests</p>
+            <p className="text-sm text-gray-600 mt-1">
+              {t("vacation.statuses.allRequests")}
+            </p>
           </button>
 
           <button
@@ -158,7 +169,9 @@ export default function MyVacationsPage() {
             <p className="text-2xl font-bold text-yellow-800">
               {getStatusCount(VacationStatus.PENDING)}
             </p>
-            <p className="text-sm text-gray-600 mt-1">Pending</p>
+            <p className="text-sm text-gray-600 mt-1">
+              {t("vacation.statuses.pending")}
+            </p>
           </button>
 
           <button
@@ -172,7 +185,9 @@ export default function MyVacationsPage() {
             <p className="text-2xl font-bold text-blue-800">
               {getStatusCount(VacationStatus.APPROVED_BY_CHIEF)}
             </p>
-            <p className="text-sm text-gray-600 mt-1">Chief Approved</p>
+            <p className="text-sm text-gray-600 mt-1">
+              {t("vacation.statuses.chiefApproved")}
+            </p>
           </button>
 
           <button
@@ -186,7 +201,9 @@ export default function MyVacationsPage() {
             <p className="text-2xl font-bold text-green-800">
               {getStatusCount(VacationStatus.APPROVED)}
             </p>
-            <p className="text-sm text-gray-600 mt-1">Fully Approved</p>
+            <p className="text-sm text-gray-600 mt-1">
+              {t("vacation.statuses.fullyApproved")}
+            </p>
           </button>
 
           <button
@@ -200,7 +217,9 @@ export default function MyVacationsPage() {
             <p className="text-2xl font-bold text-red-800">
               {getStatusCount(VacationStatus.REJECTED)}
             </p>
-            <p className="text-sm text-gray-600 mt-1">Rejected</p>
+            <p className="text-sm text-gray-600 mt-1">
+              {t("vacation.statuses.rejected")}
+            </p>
           </button>
         </div>
 
@@ -246,39 +265,61 @@ export default function MyVacationsPage() {
                       </span>
                     </p>
                   </div>
-                  <button
-                    onClick={() =>
-                      router.push(`/dashboard/vacations/status/${vacation._id}`)
-                    }
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors font-semibold"
-                  >
-                    <EyeIcon className="w-4 h-4" />
-                    View Details
-                  </button>
+                  <div className="flex gap-2">
+                    {vacation.status === VacationStatus.PENDING && (
+                      <button
+                        onClick={() => setEditingVacation(vacation)}
+                        className="flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors font-semibold"
+                        title="Edit vacation request"
+                      >
+                        <PencilIcon className="w-4 h-4" />
+                        Edit
+                      </button>
+                    )}
+                    <button
+                      onClick={() =>
+                        router.push(
+                          `/dashboard/vacations/status/${vacation._id}`
+                        )
+                      }
+                      className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors font-semibold"
+                    >
+                      <EyeIcon className="w-4 h-4" />
+                      View Details
+                    </button>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg">
                   <div>
-                    <p className="text-xs text-gray-600 mb-1">Start Date</p>
+                    <p className="text-xs text-gray-600 mb-1">
+                      {t("vacation.labels.startDate")}
+                    </p>
                     <p className="font-semibold text-gray-900">
                       {format(new Date(vacation.startDate), "MMM dd, yyyy")}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-600 mb-1">End Date</p>
+                    <p className="text-xs text-gray-600 mb-1">
+                      {t("vacation.labels.endDate")}
+                    </p>
                     <p className="font-semibold text-gray-900">
                       {format(new Date(vacation.endDate), "MMM dd, yyyy")}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-600 mb-1">Working Days</p>
+                    <p className="text-xs text-gray-600 mb-1">
+                      {t("vacation.labels.workingDays")}
+                    </p>
                     <p className="font-semibold text-gray-900">
                       {vacation.workingDays}{" "}
                       {vacation.workingDays === 1 ? "day" : "days"}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-600 mb-1">Submitted</p>
+                    <p className="text-xs text-gray-600 mb-1">
+                      {t("vacation.labels.submitted")}
+                    </p>
                     <p className="font-semibold text-gray-900">
                       {format(new Date(vacation.createdAt), "MMM dd, yyyy")}
                     </p>
@@ -298,6 +339,15 @@ export default function MyVacationsPage() {
           </div>
         )}
       </div>
+
+      {/* Edit Vacation Modal */}
+      {editingVacation && (
+        <EditVacationModal
+          isOpen={!!editingVacation}
+          onClose={() => setEditingVacation(null)}
+          vacation={editingVacation}
+        />
+      )}
     </div>
   );
 }

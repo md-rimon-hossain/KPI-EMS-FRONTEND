@@ -173,7 +173,9 @@ export default function DepartmentVacationsPage() {
           <Card>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total Requests</p>
+                <p className="text-sm text-gray-600">
+                  {t("vacation.labels.totalRequests")}
+                </p>
                 <p className="text-2xl font-bold text-gray-900">
                   {filteredVacations.length}
                 </p>
@@ -183,7 +185,9 @@ export default function DepartmentVacationsPage() {
           <Card>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Approved</p>
+                <p className="text-sm text-gray-600">
+                  {t("vacation.labels.approved")}
+                </p>
                 <p className="text-2xl font-bold text-green-600">
                   {approvedCount}
                 </p>
@@ -193,7 +197,9 @@ export default function DepartmentVacationsPage() {
           <Card>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Rejected</p>
+                <p className="text-sm text-gray-600">
+                  {t("vacation.statuses.rejected")}
+                </p>
                 <p className="text-2xl font-bold text-red-600">
                   {rejectedCount}
                 </p>
@@ -215,10 +221,12 @@ export default function DepartmentVacationsPage() {
             onChange={(e) => setStatusFilter(e.target.value)}
             className="w-full md:w-64 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value="all">All Status</option>
-            <option value="approved">Approved</option>
-            <option value="approved_by_chief">Approved by Chief</option>
-            <option value="rejected">Rejected</option>
+            <option value="all">{t("vacation.labels.allStatus")}</option>
+            <option value="approved">{t("vacation.labels.approved")}</option>
+            <option value="approved_by_chief">
+              {t("vacation.labels.approvedByChief")}
+            </option>
+            <option value="rejected">{t("vacation.statuses.rejected")}</option>
           </select>
         </Card>
 

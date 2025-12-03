@@ -17,8 +17,10 @@ import {
 } from "@heroicons/react/24/outline";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 export default function VacationStatusPage() {
+  const { t } = useTranslation();
   const params = useParams();
   const router = useRouter();
   const { user } = useAppSelector((state) => state.auth);
@@ -203,7 +205,9 @@ export default function VacationStatusPage() {
             </h3>
             <div className="space-y-3">
               <div>
-                <p className="text-xs text-gray-600">Vacation Type</p>
+                <p className="text-xs text-gray-600">
+                  {t("vacation.labels.vacationType")}
+                </p>
                 <p className="font-semibold text-gray-900">
                   {vacation.isRewardVacation
                     ? "Reward Vacation"
@@ -211,19 +215,25 @@ export default function VacationStatusPage() {
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray-600">Start Date</p>
+                <p className="text-xs text-gray-600">
+                  {t("vacation.labels.startDate")}
+                </p>
                 <p className="font-semibold text-gray-900">
                   {format(new Date(vacation.startDate), "MMMM dd, yyyy")}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray-600">End Date</p>
+                <p className="text-xs text-gray-600">
+                  {t("vacation.labels.endDate")}
+                </p>
                 <p className="font-semibold text-gray-900">
                   {format(new Date(vacation.endDate), "MMMM dd, yyyy")}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray-600">Working Days</p>
+                <p className="text-xs text-gray-600">
+                  {t("vacation.labels.workingDays")}
+                </p>
                 <p className="font-semibold text-gray-900">
                   {vacation.workingDays}{" "}
                   {vacation.workingDays === 1 ? "day" : "days"}
@@ -231,7 +241,9 @@ export default function VacationStatusPage() {
               </div>
               {vacation.reason && (
                 <div>
-                  <p className="text-xs text-gray-600 mb-1">Reason</p>
+                  <p className="text-xs text-gray-600 mb-1">
+                    {t("vacation.labels.reason")}
+                  </p>
                   <p className="text-sm text-gray-700 p-3 bg-gray-50 rounded-lg">
                     {vacation.reason}
                   </p>
@@ -248,25 +260,33 @@ export default function VacationStatusPage() {
             </h3>
             <div className="space-y-3 mb-6">
               <div>
-                <p className="text-xs text-gray-600">Name</p>
+                <p className="text-xs text-gray-600">
+                  {t("vacation.labels.name")}
+                </p>
                 <p className="font-semibold text-gray-900">
                   {vacation.employee?.name || "N/A"}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray-600">Role</p>
+                <p className="text-xs text-gray-600">
+                  {t("vacation.labels.role")}
+                </p>
                 <p className="font-semibold text-gray-900 capitalize">
                   {vacation.employee?.role?.replace(/_/g, " ") || "N/A"}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray-600">Department</p>
+                <p className="text-xs text-gray-600">
+                  {t("vacation.labels.department")}
+                </p>
                 <p className="font-semibold text-gray-900">
                   {vacation.employee?.department?.name || "N/A"}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray-600">Applied On</p>
+                <p className="text-xs text-gray-600">
+                  {t("vacation.labels.appliedOn")}
+                </p>
                 <p className="font-semibold text-gray-900">
                   {format(new Date(vacation.createdAt), "MMMM dd, yyyy")}
                 </p>
@@ -280,13 +300,17 @@ export default function VacationStatusPage() {
               </p>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <p className="text-xs text-gray-600">Current Balance</p>
+                  <p className="text-xs text-gray-600">
+                    {t("vacation.labels.currentBalance")}
+                  </p>
                   <p className="text-lg font-bold text-gray-900">
                     {currentBalance} days
                   </p>
                 </div>
                 <div className="flex items-center justify-between">
-                  <p className="text-xs text-gray-600">Days Requested</p>
+                  <p className="text-xs text-gray-600">
+                    {t("vacation.labels.daysRequested")}
+                  </p>
                   <p className="text-lg font-bold text-orange-600">
                     -{vacation.workingDays} days
                   </p>

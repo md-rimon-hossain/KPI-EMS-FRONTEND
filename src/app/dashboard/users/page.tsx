@@ -31,7 +31,7 @@ export default function UsersPage() {
   const { t } = useTranslation();
   const router = useRouter();
   const { user: currentUser } = useAppSelector((state) => state.auth);
-  const { can } = usePermission();
+  const { can, role } = usePermission();
   const { data: usersData, isLoading } = useGetAllUsersQuery();
   const users = usersData?.data?.users || [];
   const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
@@ -52,15 +52,47 @@ export default function UsersPage() {
     }
   };
 
-  const filteredUsers = users.filter(
-    (user: any) =>
+  // Filter users based on role and search
+  const filteredUsers = users.filter((user: any) => {
+    // For Chief Instructor, only show users from their department
+    if (role === "chief_instructor" && currentUser?.department?._id) {
+      if (user.department?._id !== currentUser.department._id) {
+        return false;
+      }
+    }
+
+    // Apply search filter
+    return (
       user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.role?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.department?.name?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+    );
+  });
 
   const columns = [
+    {
+      key: "profile",
+      header: t("user.profile"),
+      width: "80px",
+      render: (user: any) => (
+        <div className="flex items-center">
+          {user.profileImage ? (
+            <img
+              src={user.profileImage}
+              alt={user.name}
+              className="w-10 h-10 rounded-full object-cover border-2 border-gray-200"
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center border-2 border-gray-200">
+              <span className="text-sm font-bold text-white">
+                {user.name.charAt(0).toUpperCase()}
+              </span>
+            </div>
+          )}
+        </div>
+      ),
+    },
     {
       key: "name",
       header: t("user.name"),
@@ -199,16 +231,36 @@ export default function UsersPage() {
               onClick={() => router.push(`/dashboard/users/${user._id}`)}
               className="mobile-card bg-white border border-gray-200 rounded-xl p-3 hover:border-blue-300 transition-all"
             >
-              <div className="flex items-start justify-between gap-2 mb-2">
+              <div className="flex items-start gap-3 mb-2">
+                {/* Profile Image */}
+                <div className="flex-shrink-0">
+                  {user.profileImage ? (
+                    <img
+                      src={user.profileImage}
+                      alt={user.name}
+                      className="w-12 h-12 rounded-full object-cover border-2 border-gray-200"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center border-2 border-gray-200">
+                      <span className="text-lg font-bold text-white">
+                        {user.name.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* User Info */}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-gray-900 truncate">
-                    {user.name}
-                  </p>
+                  <div className="flex items-start justify-between gap-2 mb-1">
+                    <p className="text-sm font-bold text-gray-900 truncate">
+                      {user.name}
+                    </p>
+                    <Badge size="sm" variant="info">
+                      {t(`roles.${user.role}`)}
+                    </Badge>
+                  </div>
                   <p className="text-xs text-gray-500 truncate">{user.email}</p>
                 </div>
-                <Badge size="sm" variant="info">
-                  {t(`roles.${user.role}`)}
-                </Badge>
               </div>
 
               <div className="flex items-center justify-between text-xs">

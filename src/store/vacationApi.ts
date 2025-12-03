@@ -102,6 +102,41 @@ export const vacationApi = apiSlice.injectEndpoints({
       invalidatesTags: ["Vacation"],
     }),
 
+    updateVacation: builder.mutation<
+      { success: boolean; data: { vacation: Vacation } },
+      {
+        id: string;
+        vacationType?: VacationType;
+        startDate?: string;
+        endDate?: string;
+        reason?: string;
+      }
+    >({
+      query: ({ id, ...data }) => ({
+        url: `/vacations/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["Vacation"],
+    }),
+
+    updateVacationDates: builder.mutation<
+      { success: boolean; data: { vacation: Vacation } },
+      {
+        id: string;
+        startDate?: string;
+        endDate?: string;
+        remarks?: string;
+      }
+    >({
+      query: ({ id, ...data }) => ({
+        url: `/vacations/${id}/dates`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["Vacation"],
+    }),
+
     getMyVacations: builder.query<
       { success: boolean; count: number; data: { vacations: Vacation[] } },
       void
@@ -219,6 +254,8 @@ export const vacationApi = apiSlice.injectEndpoints({
 
 export const {
   useApplyVacationMutation,
+  useUpdateVacationMutation,
+  useUpdateVacationDatesMutation,
   useGetMyVacationsQuery,
   useGetPendingForChiefQuery,
   useGetPendingForPrincipalQuery,

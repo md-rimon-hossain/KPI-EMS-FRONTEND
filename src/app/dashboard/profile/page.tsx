@@ -88,6 +88,58 @@ export default function ProfilePage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Profile Image and Summary */}
+          <div className="lg:col-span-1 space-y-6">
+            <Card>
+              <div className="flex flex-col items-center text-center">
+                {/* Profile Image */}
+                <div className="relative mb-4">
+                  {user.profileImage ? (
+                    <img
+                      src={user.profileImage}
+                      alt={user.name}
+                      className="w-32 h-32 rounded-full object-cover border-4 border-blue-100 shadow-lg"
+                    />
+                  ) : (
+                    <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center border-4 border-blue-100 shadow-lg">
+                      <span className="text-4xl font-bold text-white">
+                        {user.name.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* User Name and Role */}
+                <h2 className="text-2xl font-bold text-gray-900 mb-1">
+                  {user.name}
+                </h2>
+                <Badge variant="info" size="lg" className="mb-3">
+                  {t(`roles.${user.role}`)}
+                </Badge>
+
+                {/* Quick Stats */}
+                <div className="w-full mt-4 pt-4 border-t border-gray-200">
+                  <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
+                    <EnvelopeIcon className="w-4 h-4" />
+                    <span className="break-all">{user.email}</span>
+                  </div>
+                  {user.phone && (
+                    <div className="flex items-center justify-center gap-2 text-sm text-gray-600 mt-2">
+                      <PhoneIcon className="w-4 h-4" />
+                      <span>{user.phone}</span>
+                    </div>
+                  )}
+                  {user.department && (
+                    <div className="flex items-center justify-center gap-2 text-sm text-gray-600 mt-2">
+                      <BuildingOfficeIcon className="w-4 h-4" />
+                      <span>{user.department.name}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </Card>
+          </div>
+
           {/* Main Profile Column */}
           <div className="lg:col-span-2 space-y-6">
             {/* Basic Information */}

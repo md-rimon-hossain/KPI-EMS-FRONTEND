@@ -167,7 +167,9 @@ export default function AllVacationsPage() {
           <Card>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total Requests</p>
+                <p className="text-sm text-gray-600">
+                  {t("vacation.labels.totalRequests")}
+                </p>
                 <p className="text-2xl font-bold text-gray-900">
                   {filteredVacations.length}
                 </p>
@@ -177,7 +179,9 @@ export default function AllVacationsPage() {
           <Card>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Approved</p>
+                <p className="text-sm text-gray-600">
+                  {t("vacation.labels.approved")}
+                </p>
                 <p className="text-2xl font-bold text-green-600">
                   {approvedCount}
                 </p>
@@ -187,7 +191,9 @@ export default function AllVacationsPage() {
           <Card>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Rejected</p>
+                <p className="text-sm text-gray-600">
+                  {t("vacation.statuses.rejected")}
+                </p>
                 <p className="text-2xl font-bold text-red-600">
                   {rejectedCount}
                 </p>
@@ -200,7 +206,9 @@ export default function AllVacationsPage() {
         <Card className="mb-6">
           <div className="flex items-center gap-2 mb-4">
             <FunnelIcon className="w-5 h-5 text-gray-600" />
-            <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
+            <h3 className="text-lg font-semibold text-gray-900">
+              {t("vacation.labels.filters")}
+            </h3>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -212,10 +220,16 @@ export default function AllVacationsPage() {
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="all">All Status</option>
-                <option value="approved">Approved</option>
-                <option value="approved_by_chief">Approved by Chief</option>
-                <option value="rejected">Rejected</option>
+                <option value="all">{t("vacation.labels.allStatus")}</option>
+                <option value="approved">
+                  {t("vacation.labels.approved")}
+                </option>
+                <option value="approved_by_chief">
+                  {t("vacation.labels.approvedByChief")}
+                </option>
+                <option value="rejected">
+                  {t("vacation.statuses.rejected")}
+                </option>
               </select>
             </div>
             <div>
@@ -227,7 +241,9 @@ export default function AllVacationsPage() {
                 onChange={(e) => setDepartmentFilter(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="all">All Departments</option>
+                <option value="all">
+                  {t("vacation.labels.allDepartments")}
+                </option>
                 {departments.map((dept: any) => (
                   <option key={dept._id} value={dept._id}>
                     {dept.name}

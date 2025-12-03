@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import {
   useGetPendingForChiefQuery,
   useReviewByChiefMutation,
+  Vacation,
 } from "@/store/vacationApi";
 import { Permission } from "@/lib/permissions";
 import {
@@ -17,7 +18,12 @@ import Table from "@/components/Table";
 import Button from "@/components/Button";
 import Loading from "@/components/Loading";
 import { ConfirmModal } from "@/components/Modal";
-import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
+import EditVacationDatesModal from "@/components/EditVacationDatesModal";
+import {
+  CheckCircleIcon,
+  XCircleIcon,
+  PencilIcon,
+} from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
 
 export default function PendingChiefPage() {
@@ -34,11 +40,20 @@ export default function PendingChiefPage() {
     "approved_by_chief" | "rejected"
   >("approved_by_chief");
   const [remarks, setRemarks] = useState("");
+  const [editingVacation, setEditingVacation] = useState<Vacation | null>(null);
 
   const handleReview = async () => {
     if (!selectedVacation) return;
 
+    // Validate vacation ID
+    if (!selectedVacation._id) {
+      toast.error("Invalid vacation ID");
+      console.error("Vacation object missing _id:", selectedVacation);
+      return;
+    }
+
     try {
+      console.log("Reviewing vacation with ID:", selectedVacation._id);
       await reviewByChief({
         id: selectedVacation._id,
         status: reviewAction as any,
@@ -54,6 +69,7 @@ export default function PendingChiefPage() {
       setSelectedVacation(null);
       setRemarks("");
     } catch (error: any) {
+      console.error("Review error:", error);
       toast.error(error?.data?.message || "Failed to review vacation");
     }
   };
@@ -139,9 +155,19 @@ export default function PendingChiefPage() {
     {
       key: "actions",
       header: "Actions",
-      width: "180px",
+      width: "220px",
       render: (vacation: any) => (
         <div className="flex gap-2">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setEditingVacation(vacation);
+            }}
+            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+            title="Edit Dates"
+          >
+            <PencilIcon className="w-5 h-5" />
+          </button>
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -275,10 +301,17 @@ export default function PendingChiefPage() {
               ? t("common.approve")
               : t("common.reject")
           }
-          variant={reviewAction === "approved_by_chief" ? "info" : "danger"}
-          loading={isReviewing}
         />
       </div>
+
+      {/* Edit Vacation Dates Modal */}
+      {editingVacation && (
+        <EditVacationDatesModal
+          isOpen={!!editingVacation}
+          onClose={() => setEditingVacation(null)}
+          vacation={editingVacation}
+        />
+      )}
     </PermissionGuard>
   );
 }

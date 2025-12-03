@@ -8,6 +8,8 @@ import { Can, RoleBadge } from "@/components/PermissionComponents";
 import { useGetAllUsersQuery } from "@/store/userApi";
 import { useGetAllDepartmentsQuery } from "@/store/departmentApi";
 import { useGetMyVacationsQuery } from "@/store/vacationApi";
+import { useGetInventoryStatisticsQuery } from "@/store/inventoryApi";
+import { useGetLoanStatisticsQuery } from "@/store/loanApi";
 import Card from "@/components/Card";
 import Badge from "@/components/Badge";
 import Loading from "@/components/Loading";
@@ -17,6 +19,9 @@ import {
   BuildingOfficeIcon,
   CalendarDaysIcon,
   ChartBarIcon,
+  CubeIcon,
+  ArrowsRightLeftIcon,
+  ExclamationTriangleIcon,
 } from "@heroicons/react/24/outline";
 
 export default function DashboardPage() {
@@ -37,6 +42,20 @@ export default function DashboardPage() {
     });
   const { data: vacationsData, isLoading: vacationsLoading } =
     useGetMyVacationsQuery();
+  const { data: inventoryStats, isLoading: inventoryStatsLoading } =
+    useGetInventoryStatisticsQuery(
+      {},
+      {
+        skip: !can(Permission.VIEW_INVENTORY),
+      }
+    );
+  const { data: loanStats, isLoading: loanStatsLoading } =
+    useGetLoanStatisticsQuery(
+      {},
+      {
+        skip: !can(Permission.VIEW_LOANS),
+      }
+    );
 
   const users = usersData?.data?.users || [];
   const departments = departmentsData?.data?.departments || [];
@@ -44,9 +63,16 @@ export default function DashboardPage() {
 
   const isLoading = vacationsLoading;
 
+  // Determine if showing department-specific data
+  const isDepartmentView =
+    role === "chief_instructor" || role === "general_head";
+  const canViewDepartments = role === "super_admin" || role === "principal";
+
   const stats = [
     {
-      title: t("dashboard.stats.totalUsers"),
+      title: isDepartmentView
+        ? t("dashboard.stats.departmentUsers")
+        : t("dashboard.stats.totalUsers"),
       value: users?.length || 0,
       icon: UsersIcon,
       color: "blue",
@@ -58,6 +84,7 @@ export default function DashboardPage() {
       icon: BuildingOfficeIcon,
       color: "green",
       permission: Permission.VIEW_DEPARTMENTS,
+      visible: canViewDepartments,
     },
     {
       title: t("dashboard.stats.myVacations"),
@@ -72,6 +99,35 @@ export default function DashboardPage() {
       icon: ChartBarIcon,
       color: "orange",
       permission: Permission.VIEW_OWN_VACATIONS,
+    },
+    {
+      title: t("dashboard.stats.totalInventoryItems"),
+      value: inventoryStats?.totalItems || 0,
+      icon: CubeIcon,
+      color: "indigo",
+      permission: Permission.VIEW_INVENTORY,
+    },
+    {
+      title: t("dashboard.stats.availableInventory"),
+      value: inventoryStats?.availableQuantity || 0,
+      icon: CubeIcon,
+      color: "teal",
+      permission: Permission.VIEW_INVENTORY,
+    },
+    {
+      title: t("dashboard.stats.activeLoans"),
+      value: loanStats?.activeLoans || 0,
+      icon: ArrowsRightLeftIcon,
+      color: "cyan",
+      permission: Permission.VIEW_LOANS,
+    },
+    {
+      title: t("dashboard.stats.overdueLoans"),
+      value: loanStats?.overdueLoans || 0,
+      icon: ExclamationTriangleIcon,
+      color: "red",
+      permission: Permission.VIEW_LOANS,
+      badge: (loanStats?.overdueLoans || 0) > 0,
     },
   ];
 
@@ -106,6 +162,8 @@ export default function DashboardPage() {
         {stats.map((stat) => {
           // Check if user has permission to view this stat
           if (!can(stat.permission)) return null;
+          // Check if stat is visible (for role-based visibility)
+          if ("visible" in stat && !stat.visible) return null;
 
           const Icon = stat.icon;
           const colorClasses = {
@@ -113,6 +171,10 @@ export default function DashboardPage() {
             green: "from-green-500 to-green-600",
             purple: "from-purple-500 to-purple-600",
             orange: "from-orange-500 to-orange-600",
+            indigo: "from-indigo-500 to-indigo-600",
+            teal: "from-teal-500 to-teal-600",
+            cyan: "from-cyan-500 to-cyan-600",
+            red: "from-red-500 to-red-600",
           };
 
           return (
@@ -126,9 +188,17 @@ export default function DashboardPage() {
                   >
                     <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   </div>
-                  <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
-                    {stat.value}
-                  </p>
+                  <div className="flex items-center gap-1">
+                    <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
+                      {stat.value}
+                    </p>
+                    {stat.badge && stat.value > 0 && (
+                      <span className="flex h-2 w-2 relative">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <p className="text-[10px] sm:text-xs font-semibold text-gray-600 truncate">
                   {stat.title}
@@ -253,29 +323,20 @@ export default function DashboardPage() {
               </button>
             )}
 
-            {can(Permission.VIEW_DEPARTMENTS) && (
-              <button
-                onClick={() =>
-                  (window.location.href = "/dashboard/departments")
-                }
-                className="tap-target p-2 sm:p-3 bg-gradient-to-br from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 active:scale-95 rounded-lg transition-all duration-200 text-center border border-purple-200"
-              >
-                <BuildingOfficeIcon className="w-6 h-6 sm:w-7 sm:h-7 mx-auto text-purple-600 mb-1" />
-                <p className="text-[10px] sm:text-xs font-semibold text-gray-900">
-                  {t("dashboard.quickActions.departments")}
-                </p>
-              </button>
-            )}
-
-            <button
-              onClick={() => (window.location.href = "/dashboard/vacations")}
-              className="tap-target p-2 sm:p-3 bg-gradient-to-br from-orange-50 to-orange-100 hover:from-orange-100 hover:to-orange-200 active:scale-95 rounded-lg transition-all duration-200 text-center border border-orange-200"
-            >
-              <ChartBarIcon className="w-6 h-6 sm:w-7 sm:h-7 mx-auto text-orange-600 mb-1" />
-              <p className="text-[10px] sm:text-xs font-semibold text-gray-900">
-                {t("dashboard.quickActions.myVacations")}
-              </p>
-            </button>
+            {can(Permission.VIEW_DEPARTMENTS) &&
+              (role === "super_admin" || role === "principal") && (
+                <button
+                  onClick={() =>
+                    (window.location.href = "/dashboard/departments")
+                  }
+                  className="tap-target p-2 sm:p-3 bg-gradient-to-br from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 active:scale-95 rounded-lg transition-all duration-200 text-center border border-purple-200"
+                >
+                  <BuildingOfficeIcon className="w-6 h-6 sm:w-7 sm:h-7 mx-auto text-purple-600 mb-1" />
+                  <p className="text-[10px] sm:text-xs font-semibold text-gray-900">
+                    {t("dashboard.quickActions.departments")}
+                  </p>
+                </button>
+              )}
           </div>
         </Card>
       </div>

@@ -24,7 +24,7 @@ export const userApi = apiSlice.injectEndpoints({
 
     createUser: builder.mutation<
       { success: boolean; data: { user: User } },
-      Partial<User> & { password: string }
+      (Partial<User> & { password: string }) | FormData
     >({
       query: (data) => ({
         url: "/users",
@@ -36,7 +36,7 @@ export const userApi = apiSlice.injectEndpoints({
 
     updateUser: builder.mutation<
       { success: boolean; data: { user: User } },
-      { id: string; data: Partial<User> }
+      { id: string; data: Partial<User> | FormData }
     >({
       query: ({ id, data }) => ({
         url: `/users/${id}`,

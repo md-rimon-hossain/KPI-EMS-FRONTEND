@@ -1,20 +1,28 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useForgotPasswordMutation } from "@/store/authApi";
 import toast from "react-hot-toast";
 import Link from "next/link";
+import { GlobeAltIcon } from "@heroicons/react/24/outline";
 
 export default function ForgotPasswordPage() {
+  const { t, i18n } = useTranslation();
   const [forgotPassword, { isLoading }] = useForgotPasswordMutation();
   const [email, setEmail] = useState("");
   const [emailSent, setEmailSent] = useState(false);
+
+  const toggleLanguage = () => {
+    const newLang = i18n.language === "en" ? "bn" : "en";
+    i18n.changeLanguage(newLang);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!email) {
-      toast.error("Please enter your email address");
+      toast.error(t("auth.enterEmail"));
       return;
     }
 
@@ -34,7 +42,16 @@ export default function ForgotPasswordPage() {
   if (emailSent) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-500 to-primary-700 px-4">
-        <div className="max-w-md w-full bg-white rounded-lg shadow-2xl p-8">
+        <div className="max-w-md w-full bg-white rounded-lg shadow-2xl p-8 relative">
+          <button
+            onClick={toggleLanguage}
+            className="absolute top-4 right-4 p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+            title={
+              i18n.language === "en" ? "Switch to Bangla" : "Switch to English"
+            }
+          >
+            <GlobeAltIcon className="w-6 h-6" />
+          </button>
           <div className="text-center">
             <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
               <svg
@@ -52,26 +69,26 @@ export default function ForgotPasswordPage() {
               </svg>
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Check Your Email
+              {t("auth.checkYourEmail")}
             </h2>
             <p className="text-gray-600 mb-6">
-              We've sent a password reset link to <strong>{email}</strong>
+              {t("auth.resetLinkSent")} <strong>{email}</strong>
             </p>
             <p className="text-sm text-gray-500 mb-8">
-              If you don't see the email, check your spam folder or try again.
+              {t("auth.checkSpamFolder")}
             </p>
             <div className="space-y-3">
               <button
                 onClick={() => setEmailSent(false)}
                 className="w-full btn-secondary py-2"
               >
-                Send Again
+                {t("auth.sendAgain")}
               </button>
               <Link
                 href="/login"
                 className="block w-full text-center py-2 text-primary-600 hover:text-primary-500 font-medium"
               >
-                Back to Login
+                {t("auth.backToLogin")}
               </Link>
             </div>
           </div>
@@ -82,15 +99,21 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-500 to-primary-700 px-4">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-2xl p-8">
+      <div className="max-w-md w-full bg-white rounded-lg shadow-2xl p-8 relative">
+        <button
+          onClick={toggleLanguage}
+          className="absolute top-4 right-4 p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+          title={
+            i18n.language === "en" ? "Switch to Bangla" : "Switch to English"
+          }
+        >
+          <GlobeAltIcon className="w-6 h-6" />
+        </button>
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Forgot Password?
+            {t("auth.forgotPasswordTitle")}
           </h1>
-          <p className="text-gray-600">
-            Enter your email address and we'll send you a link to reset your
-            password.
-          </p>
+          <p className="text-gray-600">{t("auth.forgotPasswordSubtitle")}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -99,14 +122,14 @@ export default function ForgotPasswordPage() {
               htmlFor="email"
               className="block text-sm font-medium text-gray-700 mb-2"
             >
-              Email Address
+              {t("auth.email")}
             </label>
             <input
               id="email"
               type="email"
               required
               className="input-field"
-              placeholder="admin@college.com"
+              placeholder={t("auth.emailPlaceholder")}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               autoFocus
@@ -118,7 +141,7 @@ export default function ForgotPasswordPage() {
             disabled={isLoading}
             className="w-full btn-primary py-3 text-lg font-semibold"
           >
-            {isLoading ? "Sending..." : "Send Reset Link"}
+            {isLoading ? t("auth.sending") : t("auth.sendResetLink")}
           </button>
 
           <div className="text-center">
@@ -126,7 +149,7 @@ export default function ForgotPasswordPage() {
               href="/login"
               className="text-sm text-primary-600 hover:text-primary-500 font-medium"
             >
-              ← Back to Login
+              ← {t("auth.backToLogin")}
             </Link>
           </div>
         </form>

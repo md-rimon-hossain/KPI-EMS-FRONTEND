@@ -18,6 +18,9 @@ import {
   XMarkIcon,
   DocumentCheckIcon,
   FolderIcon,
+  CubeIcon,
+  BeakerIcon,
+  ArrowsRightLeftIcon,
 } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 
@@ -64,6 +67,24 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           href: "/dashboard/vacations/all",
           icon: CalendarDaysIcon,
           permission: Permission.VIEW_ALL_VACATIONS,
+        },
+        {
+          name: t("nav.inventory"),
+          href: "/dashboard/inventory",
+          icon: CubeIcon,
+          permission: Permission.VIEW_INVENTORY,
+        },
+        {
+          name: t("nav.labs"),
+          href: "/dashboard/labs",
+          icon: BeakerIcon,
+          permission: Permission.VIEW_LABS,
+        },
+        {
+          name: t("nav.loans"),
+          href: "/dashboard/loans",
+          icon: ArrowsRightLeftIcon,
+          permission: Permission.VIEW_LOANS,
         },
         {
           name: t("nav.profile"),
@@ -115,6 +136,24 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           permission: Permission.APPROVE_AS_PRINCIPAL,
         },
         {
+          name: t("nav.inventory"),
+          href: "/dashboard/inventory",
+          icon: CubeIcon,
+          permission: Permission.VIEW_INVENTORY,
+        },
+        {
+          name: t("nav.labs"),
+          href: "/dashboard/labs",
+          icon: BeakerIcon,
+          permission: Permission.VIEW_LABS,
+        },
+        {
+          name: t("nav.loans"),
+          href: "/dashboard/loans",
+          icon: ArrowsRightLeftIcon,
+          permission: Permission.VIEW_LOANS,
+        },
+        {
           name: t("nav.profile"),
           href: "/dashboard/profile",
           icon: UserCircleIcon,
@@ -134,10 +173,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       return [
         ...baseNavigation,
         {
-          name: t("nav.departments"),
-          href: "/dashboard/departments",
-          icon: BuildingOfficeIcon,
-          permission: Permission.VIEW_DEPARTMENTS,
+          name: t("nav.users"),
+          href: "/dashboard/users",
+          icon: UsersIcon,
+          permission: Permission.VIEW_ALL_USERS,
         },
         {
           name: t("nav.myVacations"),
@@ -156,6 +195,24 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           href: "/dashboard/vacations/pending-chief",
           icon: CalendarDaysIcon,
           permission: Permission.APPROVE_AS_CHIEF,
+        },
+        {
+          name: t("nav.inventory"),
+          href: "/dashboard/inventory",
+          icon: CubeIcon,
+          permission: Permission.VIEW_INVENTORY,
+        },
+        {
+          name: t("nav.labs"),
+          href: "/dashboard/labs",
+          icon: BeakerIcon,
+          permission: Permission.VIEW_LABS,
+        },
+        {
+          name: t("nav.loans"),
+          href: "/dashboard/loans",
+          icon: ArrowsRightLeftIcon,
+          permission: Permission.VIEW_LOANS,
         },
         {
           name: t("nav.profile"),
@@ -180,6 +237,12 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         href: "/dashboard/vacations/my-vacations",
         icon: CalendarDaysIcon,
         permission: Permission.VIEW_OWN_VACATIONS,
+      },
+      {
+        name: t("nav.myActiveLoans"),
+        href: "/dashboard/loans/my-active",
+        icon: ArrowsRightLeftIcon,
+        permission: Permission.VIEW_OWN_LOANS,
       },
       {
         name: t("nav.profile"),
