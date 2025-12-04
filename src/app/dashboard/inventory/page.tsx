@@ -254,6 +254,14 @@ export default function InventoryPage() {
                     </div>
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-600">
+                        {t("inventory.lab")}:
+                      </span>
+                      <span className="font-medium text-gray-900">
+                        {item.lab?.name || "N/A"}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600">
                         {t("inventory.condition")}:
                       </span>
                       <Badge

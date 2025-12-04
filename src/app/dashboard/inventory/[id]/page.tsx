@@ -12,6 +12,7 @@ import {
   useUpdateInventoryItemMutation,
 } from "@/store/inventoryApi";
 import { useGetAllDepartmentsQuery } from "@/store/departmentApi";
+import { useGetLabsByDepartmentQuery } from "@/store/labApi";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 import Card from "@/components/Card";
@@ -43,22 +44,26 @@ export default function InventoryFormPage() {
     }
   );
 
-  const { data: departmentsData } = useGetAllDepartmentsQuery();
-  const [createItem, { isLoading: isCreating }] =
-    useCreateInventoryItemMutation();
-  const [updateItem, { isLoading: isUpdating }] =
-    useUpdateInventoryItemMutation();
-
   const [formData, setFormData] = useState({
     quantity: "",
     condition: "good",
     status: "available",
     department: "",
+    lab: "",
     description: "",
   });
 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
+
+  const { data: departmentsData } = useGetAllDepartmentsQuery();
+  const { data: labsData } = useGetLabsByDepartmentQuery(formData.department, {
+    skip: !formData.department,
+  });
+  const [createItem, { isLoading: isCreating }] =
+    useCreateInventoryItemMutation();
+  const [updateItem, { isLoading: isUpdating }] =
+    useUpdateInventoryItemMutation();
 
   // Auto-select department for Chief Instructor and General Head
   useEffect(() => {
@@ -77,6 +82,7 @@ export default function InventoryFormPage() {
         condition: item.condition || "good",
         status: item.status || "available",
         department: item.department?._id || "",
+        lab: item.lab?._id || "",
         description: item.description || "",
       });
       if (item.image) {
@@ -143,6 +149,12 @@ export default function InventoryFormPage() {
       return;
     }
 
+    // Validate lab
+    if (!formData.lab) {
+      alert(t("inventory.labRequired") || "Lab is required");
+      return;
+    }
+
     // Validate quantity
     if (!formData.quantity || parseInt(formData.quantity) <= 0) {
       alert(t("inventory.quantityRequired") || "Valid quantity is required");
@@ -155,6 +167,7 @@ export default function InventoryFormPage() {
       formDataToSend.append("condition", formData.condition);
       formDataToSend.append("status", formData.status);
       formDataToSend.append("department", formData.department);
+      formDataToSend.append("lab", formData.lab);
       formDataToSend.append("description", formData.description);
 
       if (imageFile) {
@@ -397,7 +410,13 @@ export default function InventoryFormPage() {
                   <select
                     name="department"
                     value={formData.department}
-                    onChange={handleChange}
+                    onChange={(e) => {
+                      setFormData({
+                        ...formData,
+                        department: e.target.value,
+                        lab: "",
+                      });
+                    }}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     required
                   >
@@ -418,6 +437,30 @@ export default function InventoryFormPage() {
                     </p>
                   </div>
                 )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t("inventory.lab")} *
+                </label>
+                <select
+                  name="lab"
+                  value={formData.lab}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                  disabled={!formData.department}
+                >
+                  <option value="">
+                    {formData.department
+                      ? t("common.select")
+                      : t("inventory.selectDepartmentFirst")}
+                  </option>
+                  {labsData?.labs?.map((lab: any) => (
+                    <option key={lab._id} value={lab._id}>
+                      {lab.name} ({lab.labCode})
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
           </div>

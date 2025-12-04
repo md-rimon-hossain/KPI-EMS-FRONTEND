@@ -40,7 +40,8 @@ export default function LoanRequestPage() {
 
   const [formData, setFormData] = useState({
     inventoryItem: "",
-    lab: "",
+    sourceLab: "", // Lab that owns the item (auto-filled from inventory)
+    destinationLab: "", // Lab requesting the item
     quantity: "",
     purpose: "",
     expectedReturnDate: "",
@@ -60,6 +61,14 @@ export default function LoanRequestPage() {
     if (name === "inventoryItem") {
       const item = inventoryData?.items?.find((i: any) => i._id === value);
       setSelectedItem(item);
+      // Auto-fill source lab from selected inventory item
+      if (item?.lab?._id) {
+        setFormData((prev) => ({
+          ...prev,
+          inventoryItem: value,
+          sourceLab: item.lab._id,
+        }));
+      }
     }
   };
 
@@ -68,8 +77,13 @@ export default function LoanRequestPage() {
 
     try {
       const payload = {
-        ...formData,
+        inventoryItem: formData.inventoryItem,
+        sourceLab: formData.sourceLab,
+        destinationLab: formData.destinationLab,
         quantity: parseInt(formData.quantity),
+        purpose: formData.purpose,
+        expectedReturnDate: formData.expectedReturnDate,
+        notes: formData.notes,
         loanDate: new Date().toISOString(), // Default to current date
       };
 
@@ -173,29 +187,52 @@ export default function LoanRequestPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                {t("loan.lab")} *
+                {t("loan.sourceLab")} (Item Location) *
+              </label>
+              <div className="px-4 py-2 border border-gray-200 rounded-lg bg-gray-50">
+                <span className="text-gray-900 font-medium">
+                  {selectedItem?.lab?.name
+                    ? `${selectedItem.lab.name} (${selectedItem.lab.labCode})`
+                    : t("loan.selectItemFirst") || "Select item first"}
+                </span>
+                <p className="text-xs text-gray-500 mt-1">
+                  {t("loan.sourceLabAutoFilled") ||
+                    "Auto-filled from selected inventory item"}
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {t("loan.destinationLab")} (Requesting Lab) *
               </label>
               <select
-                name="lab"
-                value={formData.lab}
+                name="destinationLab"
+                value={formData.destinationLab}
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
-                disabled={isLoadingLabs}
+                disabled={isLoadingLabs || !formData.sourceLab}
               >
                 <option value="">
-                  {isLoadingLabs ? t("common.loading") : t("loan.selectLab")}
+                  {isLoadingLabs
+                    ? t("common.loading")
+                    : !formData.sourceLab
+                    ? t("loan.selectItemFirst")
+                    : t("loan.selectDestinationLab")}
                 </option>
-                {labsData?.labs?.map((lab: any) => (
-                  <option key={lab._id} value={lab._id}>
-                    {lab.name} ({lab.labCode}) - {lab.department?.name}
-                  </option>
-                ))}
+                {labsData?.labs
+                  ?.filter((lab: any) => lab._id !== formData.sourceLab) // Exclude source lab
+                  .map((lab: any) => (
+                    <option key={lab._id} value={lab._id}>
+                      {lab.name} ({lab.labCode}) - {lab.department?.name}
+                    </option>
+                  ))}
               </select>
               {!isLoadingLabs &&
                 (!labsData?.labs || labsData.labs.length === 0) && (
                   <p className="mt-1 text-sm text-amber-600">
-                    No labs available for your department
+                    No labs available
                   </p>
                 )}
             </div>
@@ -257,6 +294,14 @@ export default function LoanRequestPage() {
                   </span>{" "}
                   <span className="font-medium">
                     {selectedItem.department?.name}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-gray-600">{t("inventory.lab")}:</span>{" "}
+                  <span className="font-medium">
+                    {selectedItem.lab?.name || "N/A"}{" "}
+                    {selectedItem.lab?.labCode &&
+                      `(${selectedItem.lab.labCode})`}
                   </span>
                 </div>
               </div>

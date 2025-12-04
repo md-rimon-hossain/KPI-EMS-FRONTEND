@@ -139,10 +139,18 @@ export default function LoanDetailPage() {
             </div>
             <div>
               <h3 className="text-sm font-medium text-gray-500 mb-1">
-                {t("loan.lab")}
+                {t("loan.sourceLab")} (Item Location)
               </h3>
               <p className="text-gray-900 font-medium">
-                {loan.lab.name} ({loan.lab.labCode})
+                {loan.sourceLab.name} ({loan.sourceLab.labCode})
+              </p>
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-gray-500 mb-1">
+                {t("loan.destinationLab")} (Borrowing Lab)
+              </h3>
+              <p className="text-gray-900 font-medium">
+                {loan.destinationLab.name} ({loan.destinationLab.labCode})
               </p>
             </div>
             <div>

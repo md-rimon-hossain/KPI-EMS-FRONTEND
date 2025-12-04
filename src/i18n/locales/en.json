@@ -729,5 +729,18 @@
     "rejectConfirm": "Are you sure you want to reject this loan?",
     "returnConfirm": "Are you sure you want to mark this loan as returned?",
     "insufficientQuantity": "Insufficient quantity available"
+  },
+  "chatbot": {
+    "askMe": "Ask me anything!",
+    "alwaysHere": "Always here to help",
+    "clearChat": "Clear chat",
+    "clear": "Clear",
+    "loggedInAs": "Logged in as",
+    "welcome": "Welcome to KPI-EMS Assistant!",
+    "welcomeMessage": "I can help you navigate the system, answer questions, and provide guidance.",
+    "quickQuestions": "Quick questions:",
+    "typeMessage": "Type your message...",
+    "poweredBy": "KPI-EMS AI Assistant",
+    "goTo": "Go to"
   }
 }

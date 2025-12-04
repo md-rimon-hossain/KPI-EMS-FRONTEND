@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import EmailVerificationBanner from "@/components/EmailVerificationBanner";
+import Chatbot from "@/components/Chatbot";
 
 export default function DashboardLayout({
   children,
@@ -43,6 +44,9 @@ export default function DashboardLayout({
 
       {/* Mobile Bottom Navigation */}
       <MobileBottomNav />
+
+      {/* AI Chatbot */}
+      <Chatbot />
     </div>
   );
 }

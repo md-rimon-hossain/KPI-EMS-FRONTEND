@@ -6,7 +6,8 @@ export interface Loan {
   _id: string;
   loanCode: string;
   inventoryItem: InventoryItem;
-  lab: Lab;
+  sourceLab: Lab; // Lab lending the item
+  destinationLab: Lab; // Lab borrowing the item
   requestedBy: {
     _id: string;
     name: string;
@@ -55,7 +56,8 @@ export const loanApi = apiSlice.injectEndpoints({
       {
         page?: number;
         limit?: number;
-        lab?: string;
+        sourceLab?: string;
+        destinationLab?: string;
         status?: string;
         search?: string;
       }
@@ -133,7 +135,8 @@ export const loanApi = apiSlice.injectEndpoints({
       Loan,
       {
         inventoryItem: string;
-        lab: string;
+        sourceLab: string; // Lab lending the item
+        destinationLab: string; // Lab borrowing the item
         quantity: number;
         purpose: string;
         expectedReturnDate: string;

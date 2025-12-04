@@ -13,6 +13,11 @@ export interface InventoryItem {
     name: string;
     code: string;
   };
+  lab: {
+    _id: string;
+    name: string;
+    labCode: string;
+  };
   description?: string;
   image?: string; // Cloudinary URL
   imagePublicId?: string;
