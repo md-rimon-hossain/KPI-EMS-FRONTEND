@@ -4,7 +4,8 @@ import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useRouter, useParams } from "next/navigation";
 import { usePermission } from "@/hooks/usePermission";
-import { Permission } from "@/lib/permissions";
+import { Permission, UserRole } from "@/lib/permissions";
+import { useAppSelector } from "@/store/hooks";
 import {
   useGetLabQuery,
   useCreateLabMutation,
@@ -23,7 +24,13 @@ export default function LabFormPage() {
   const router = useRouter();
   const params = useParams();
   const { can } = usePermission();
+  const { user } = useAppSelector((state) => state.auth);
   const isEdit = params?.id && params.id !== "create";
+
+  // Check if user can select department
+  const canSelectDepartment =
+    user?.role === UserRole.SUPER_ADMIN ||
+    user?.role === UserRole.REGISTRAR_HEAD;
 
   const { data: lab, isLoading: labLoading } = useGetLabQuery(
     params?.id as string,
@@ -61,12 +68,36 @@ export default function LabFormPage() {
     }
   }, [lab, isEdit]);
 
+  // Auto-select department for Chief Instructor and General Head
+  useEffect(() => {
+    if (!isEdit && user && !canSelectDepartment) {
+      setFormData((prev) => ({
+        ...prev,
+        department: user.department?._id || "",
+      }));
+    }
+  }, [user, canSelectDepartment, isEdit]);
+
+  // Filter users by selected department for lab incharge
+  const filteredUsers =
+    usersData?.data?.users?.filter((u: any) => {
+      if (!formData.department) return false;
+      return u.department?._id === formData.department;
+    }) || [];
+
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >
   ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    // Reset lab incharge when department changes
+    if (name === "department") {
+      setFormData({ ...formData, [name]: value, labIncharge: "" });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -147,8 +178,9 @@ export default function LabFormPage() {
                 name="department"
                 value={formData.department}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                 required
+                disabled={!canSelectDepartment}
               >
                 <option value="">{t("common.select")}</option>
                 {departmentsData?.data?.departments?.map((dept: any) => (
@@ -157,6 +189,12 @@ export default function LabFormPage() {
                   </option>
                 ))}
               </select>
+              {!canSelectDepartment && (
+                <p className="text-xs text-gray-500 mt-1">
+                  {t("lab.departmentAutoSelected") ||
+                    "Your department is auto-selected"}
+                </p>
+              )}
             </div>
 
             <div>
@@ -168,14 +206,27 @@ export default function LabFormPage() {
                 value={formData.labIncharge}
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                disabled={!formData.department}
               >
-                <option value="">{t("lab.selectIncharge")}</option>
-                {usersData?.data?.users?.map((user: any) => (
+                <option value="">
+                  {!formData.department
+                    ? t("lab.selectDepartmentFirst") ||
+                      "Select department first"
+                    : filteredUsers.length === 0
+                    ? t("lab.noUsersInDepartment") ||
+                      "No users in this department"
+                    : t("lab.selectIncharge")}
+                </option>
+                {filteredUsers.map((user: any) => (
                   <option key={user._id} value={user._id}>
-                    {user.name} ({user.email})
+                    {user.name} - {user.role} ({user.email})
                   </option>
                 ))}
               </select>
+              <p className="text-xs text-gray-500 mt-1">
+                {t("lab.inchargeInfo") ||
+                  "Lab incharge can request loans without approval"}
+              </p>
             </div>
 
             <Input

@@ -401,6 +401,9 @@ export default function CreateUserPage() {
                   {t("roles.vice_principal")}
                 </option>
                 <option value="principal">{t("roles.principal")}</option>
+                <option value="registrar_head">
+                  {t("roles.registrar_head")}
+                </option>
                 <option value="super_admin">{t("roles.super_admin")}</option>
               </select>
               {errors.role && (

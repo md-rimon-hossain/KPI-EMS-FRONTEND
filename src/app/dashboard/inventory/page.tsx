@@ -11,6 +11,7 @@ import {
   useDeleteInventoryItemMutation,
 } from "@/store/inventoryApi";
 import { useGetAllDepartmentsQuery } from "@/store/departmentApi";
+import { useGetLabsByDepartmentQuery } from "@/store/labApi";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 import Badge from "@/components/Badge";
@@ -32,15 +33,24 @@ export default function InventoryPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [selectedLab, setSelectedLab] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
   const [selectedCondition, setSelectedCondition] = useState("");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
 
+  // Auto-select department for instructors (backend already filters by their department)
+  React.useEffect(() => {
+    if (user?.department?._id && role === "instructor" && !selectedDepartment) {
+      setSelectedDepartment(user.department._id);
+    }
+  }, [user, role, selectedDepartment]);
+
   const { data: inventoryData, isLoading } = useGetInventoryItemsQuery({
     page,
     limit: 20,
     department: selectedDepartment || undefined,
+    lab: selectedLab || undefined,
     status: selectedStatus || undefined,
     condition: selectedCondition || undefined,
     search: search || undefined,
@@ -57,8 +67,40 @@ export default function InventoryPage() {
   }, [user, inventoryData, isLoading]);
 
   const { data: departmentsData } = useGetAllDepartmentsQuery();
+
+  // Determine which department to use for labs query
+  const departmentForLabs = selectedDepartment || user?.department?._id || "";
+
+  const {
+    data: labsData,
+    isLoading: labsLoading,
+    error: labsError,
+  } = useGetLabsByDepartmentQuery(departmentForLabs, {
+    skip: !departmentForLabs, // Only skip if there's no department at all
+  });
   const [deleteItem, { isLoading: isDeleting }] =
     useDeleteInventoryItemMutation();
+
+  // Debug logging for labs
+  React.useEffect(() => {
+    console.log("=== LABS FILTER DEBUG ===");
+    console.log("Selected Department:", selectedDepartment);
+    console.log("User Department ID:", user?.department?._id);
+    console.log("Department for Labs Query:", departmentForLabs);
+    console.log("Skip Query:", !departmentForLabs);
+    console.log("Labs Data:", labsData);
+    console.log("Labs Array:", labsData?.labs);
+    console.log("Labs Count:", labsData?.labs?.length);
+    console.log("Labs Loading:", labsLoading);
+    console.log("Labs Error:", labsError);
+  }, [
+    selectedDepartment,
+    user?.department?._id,
+    departmentForLabs,
+    labsData,
+    labsLoading,
+    labsError,
+  ]);
 
   const handleDelete = async () => {
     if (!itemToDelete) return;
@@ -122,7 +164,7 @@ export default function InventoryPage() {
 
       {/* Filters */}
       <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           <div className="relative">
             <MagnifyingGlassIcon className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <Input
@@ -134,13 +176,17 @@ export default function InventoryPage() {
             />
           </div>
 
-          {/* Hide department filter for Chief Instructor, General Head, and Craft Instructor */}
+          {/* Hide department filter for Chief Instructor, General Head, Craft Instructor, and Instructor */}
           {role !== "chief_instructor" &&
             role !== "general_head" &&
-            role !== "craft_instructor" && (
+            role !== "craft_instructor" &&
+            role !== "instructor" && (
               <select
                 value={selectedDepartment}
-                onChange={(e) => setSelectedDepartment(e.target.value)}
+                onChange={(e) => {
+                  setSelectedDepartment(e.target.value);
+                  setSelectedLab(""); // Reset lab when department changes
+                }}
                 className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">
@@ -153,6 +199,31 @@ export default function InventoryPage() {
                 ))}
               </select>
             )}
+
+          {/* Lab Filter */}
+          <select
+            value={selectedLab}
+            onChange={(e) => setSelectedLab(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            disabled={!departmentForLabs || labsLoading}
+          >
+            <option value="">
+              {!departmentForLabs
+                ? "Select department first"
+                : labsLoading
+                ? "Loading labs..."
+                : labsData?.labs?.length === 0
+                ? "No labs available - Create labs first"
+                : `${t("common.select")} ${t("inventory.lab")} ${
+                    labsData?.labs?.length ? `(${labsData.labs.length})` : ""
+                  }`}
+            </option>
+            {labsData?.labs?.map((lab: any) => (
+              <option key={lab._id} value={lab._id}>
+                {lab.name} ({lab.labCode})
+              </option>
+            ))}
+          </select>
 
           <select
             value={selectedCondition}
@@ -238,9 +309,11 @@ export default function InventoryPage() {
                 <div className="p-4 flex-1 flex flex-col">
                   <div className="mb-3">
                     <h3 className="text-lg font-semibold text-gray-900 mb-1 line-clamp-2">
-                      {item.name}
+                      {item.itemName}
                     </h3>
-                    <p className="text-xs text-gray-500">{item.serialNumber}</p>
+                    <p className="text-xs text-gray-500">
+                      {item.name} • {item.serialNumber}
+                    </p>
                   </div>
 
                   <div className="space-y-2 mb-4 flex-1">
@@ -283,17 +356,39 @@ export default function InventoryPage() {
 
                   {/* Actions */}
                   <div className="flex gap-2 pt-3 border-t border-gray-200">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() =>
-                        router.push(`/dashboard/inventory/${item._id}`)
-                      }
-                      className="flex-1"
-                    >
-                      <PencilIcon className="w-4 h-4 mr-1" />
-                      {t("common.edit")}
-                    </Button>
+                    {can(Permission.REQUEST_LOAN) &&
+                      item.availableQuantity > 0 && (
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          onClick={() =>
+                            router.push(
+                              `/dashboard/loans/request?item=${item._id}`
+                            )
+                          }
+                          className="flex-1"
+                        >
+                          {t("loan.requestLoan")}
+                        </Button>
+                      )}
+                    {can(Permission.EDIT_INVENTORY) && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          router.push(`/dashboard/inventory/${item._id}`)
+                        }
+                        className={
+                          can(Permission.REQUEST_LOAN) &&
+                          item.availableQuantity > 0
+                            ? ""
+                            : "flex-1"
+                        }
+                      >
+                        <PencilIcon className="w-4 h-4 mr-1" />
+                        {t("common.edit")}
+                      </Button>
+                    )}
                     {can(Permission.DELETE_INVENTORY) && (
                       <Button
                         variant="outline"

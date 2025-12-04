@@ -4,12 +4,9 @@ import { useTranslation } from "react-i18next";
 import { useAppSelector } from "@/store/hooks";
 import { usePermission } from "@/hooks/usePermission";
 import { Permission } from "@/lib/permissions";
-import { Can, RoleBadge } from "@/components/PermissionComponents";
 import { useGetAllUsersQuery } from "@/store/userApi";
 import { useGetAllDepartmentsQuery } from "@/store/departmentApi";
 import { useGetMyVacationsQuery } from "@/store/vacationApi";
-import { useGetInventoryStatisticsQuery } from "@/store/inventoryApi";
-import { useGetLoanStatisticsQuery } from "@/store/loanApi";
 import Card from "@/components/Card";
 import Badge from "@/components/Badge";
 import Loading from "@/components/Loading";
@@ -19,9 +16,6 @@ import {
   BuildingOfficeIcon,
   CalendarDaysIcon,
   ChartBarIcon,
-  CubeIcon,
-  ArrowsRightLeftIcon,
-  ExclamationTriangleIcon,
 } from "@heroicons/react/24/outline";
 
 export default function DashboardPage() {
@@ -42,20 +36,6 @@ export default function DashboardPage() {
     });
   const { data: vacationsData, isLoading: vacationsLoading } =
     useGetMyVacationsQuery();
-  const { data: inventoryStats, isLoading: inventoryStatsLoading } =
-    useGetInventoryStatisticsQuery(
-      {},
-      {
-        skip: !can(Permission.VIEW_INVENTORY),
-      }
-    );
-  const { data: loanStats, isLoading: loanStatsLoading } =
-    useGetLoanStatisticsQuery(
-      {},
-      {
-        skip: !can(Permission.VIEW_LOANS),
-      }
-    );
 
   const users = usersData?.data?.users || [];
   const departments = departmentsData?.data?.departments || [];
@@ -66,7 +46,8 @@ export default function DashboardPage() {
   // Determine if showing department-specific data
   const isDepartmentView =
     role === "chief_instructor" || role === "general_head";
-  const canViewDepartments = role === "super_admin" || role === "principal";
+  const canViewDepartments =
+    role === "super_admin" || role === "registrar_head" || role === "principal";
 
   const stats = [
     {
@@ -100,35 +81,6 @@ export default function DashboardPage() {
       color: "orange",
       permission: Permission.VIEW_OWN_VACATIONS,
     },
-    {
-      title: t("dashboard.stats.totalInventoryItems"),
-      value: inventoryStats?.totalItems || 0,
-      icon: CubeIcon,
-      color: "indigo",
-      permission: Permission.VIEW_INVENTORY,
-    },
-    {
-      title: t("dashboard.stats.availableInventory"),
-      value: inventoryStats?.availableQuantity || 0,
-      icon: CubeIcon,
-      color: "teal",
-      permission: Permission.VIEW_INVENTORY,
-    },
-    {
-      title: t("dashboard.stats.activeLoans"),
-      value: loanStats?.activeLoans || 0,
-      icon: ArrowsRightLeftIcon,
-      color: "cyan",
-      permission: Permission.VIEW_LOANS,
-    },
-    {
-      title: t("dashboard.stats.overdueLoans"),
-      value: loanStats?.overdueLoans || 0,
-      icon: ExclamationTriangleIcon,
-      color: "red",
-      permission: Permission.VIEW_LOANS,
-      badge: (loanStats?.overdueLoans || 0) > 0,
-    },
   ];
 
   const getGreeting = () => {
@@ -152,9 +104,16 @@ export default function DashboardPage() {
         <p className="text-xs sm:text-sm text-gray-600 mt-1">
           {t("dashboard.welcome")}
         </p>
-        <Badge variant="info" size="sm" className="mt-2">
-          {t(`roles.${user?.role || "instructor"}`)}
-        </Badge>
+        <div className="flex flex-wrap gap-2 mt-2">
+          <Badge variant="info" size="sm">
+            {t(`roles.${user?.role || "instructor"}`)}
+          </Badge>
+          {user?.department && (
+            <Badge variant="success" size="sm">
+              {user.department.name} ({user.department.code})
+            </Badge>
+          )}
+        </div>
       </div>
 
       {/* Stats Grid - Compact Mobile Grid */}
@@ -192,12 +151,6 @@ export default function DashboardPage() {
                     <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
                       {stat.value}
                     </p>
-                    {stat.badge && stat.value > 0 && (
-                      <span className="flex h-2 w-2 relative">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                      </span>
-                    )}
                   </div>
                 </div>
                 <p className="text-[10px] sm:text-xs font-semibold text-gray-600 truncate">
@@ -282,7 +235,8 @@ export default function DashboardPage() {
               </p>
             </button>
 
-            {user?.role === "chief_instructor" && (
+            {(user?.role === "chief_instructor" ||
+              user?.role === "general_head") && (
               <button
                 onClick={() =>
                   (window.location.href = "/dashboard/vacations/pending-chief")
@@ -324,7 +278,9 @@ export default function DashboardPage() {
             )}
 
             {can(Permission.VIEW_DEPARTMENTS) &&
-              (role === "super_admin" || role === "principal") && (
+              (role === "super_admin" ||
+                role === "registrar_head" ||
+                role === "principal") && (
                 <button
                   onClick={() =>
                     (window.location.href = "/dashboard/departments")

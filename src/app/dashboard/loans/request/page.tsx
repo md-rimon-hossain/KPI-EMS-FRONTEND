@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAppSelector } from "@/store/hooks";
 import { usePermission } from "@/hooks/usePermission";
 import { Permission } from "@/lib/permissions";
@@ -17,8 +17,11 @@ import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 export default function LoanRequestPage() {
   const { t } = useTranslation();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { can } = usePermission();
   const { user } = useAppSelector((state) => state.auth);
+
+  const itemId = searchParams.get("item");
 
   const [createLoan, { isLoading: isCreating }] = useCreateLoanMutation();
   const { data: inventoryData, isLoading: isLoadingInventory } =
@@ -49,6 +52,21 @@ export default function LoanRequestPage() {
   });
 
   const [selectedItem, setSelectedItem] = useState<any>(null);
+
+  // Auto-select inventory item from URL parameter
+  useEffect(() => {
+    if (itemId && inventoryData?.items && !formData.inventoryItem) {
+      const item = inventoryData.items.find((i: any) => i._id === itemId);
+      if (item) {
+        setSelectedItem(item);
+        setFormData((prev) => ({
+          ...prev,
+          inventoryItem: item._id,
+          sourceLab: item.lab?._id || "",
+        }));
+      }
+    }
+  }, [itemId, inventoryData, formData.inventoryItem]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -94,10 +112,8 @@ export default function LoanRequestPage() {
     }
   };
 
-  // Check if user has permission and is Chief Instructor or Craft Instructor
-  const canRequestLoan =
-    can(Permission.REQUEST_LOAN) &&
-    (user?.role === "chief_instructor" || user?.role === "craft_instructor");
+  // Check if user has permission
+  const canRequestLoan = can(Permission.REQUEST_LOAN);
 
   if (!canRequestLoan) {
     return (
@@ -105,8 +121,7 @@ export default function LoanRequestPage() {
         <div className="max-w-md mx-auto">
           <p className="text-gray-500 mb-2">{t("common.noPermission")}</p>
           <p className="text-sm text-gray-400">
-            Only Chief Instructors and Craft Instructors can request inventory
-            loans.
+            You don't have permission to request inventory loans.
           </p>
         </div>
       </div>

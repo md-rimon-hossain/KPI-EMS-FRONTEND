@@ -2,6 +2,7 @@ import { apiSlice } from "./apiSlice";
 
 export interface InventoryItem {
   _id: string;
+  itemName: string; // User-provided meaningful name
   name: string; // Auto-generated
   serialNumber: string; // Auto-generated
   quantity: number;
@@ -51,6 +52,7 @@ export const inventoryApi = apiSlice.injectEndpoints({
         page?: number;
         limit?: number;
         department?: string;
+        lab?: string;
         condition?: string;
         status?: string;
         search?: string;

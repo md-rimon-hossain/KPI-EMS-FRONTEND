@@ -5,14 +5,14 @@ import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
 import { usePermission } from "@/hooks/usePermission";
 import { Permission } from "@/lib/permissions";
-import { useGetMyActiveLoansQuery } from "@/store/loanApi";
+import { useGetMyLoanHistoryQuery } from "@/store/loanApi";
 import Button from "@/components/Button";
 import Card from "@/components/Card";
 import Badge from "@/components/Badge";
 import Loading from "@/components/Loading";
 import Table from "@/components/Table";
 
-export default function MyActiveLoansPage() {
+export default function InventoryLoansHistoryPage() {
   const { t } = useTranslation();
   const router = useRouter();
   const { can } = usePermission();
@@ -25,7 +25,7 @@ export default function MyActiveLoansPage() {
     );
   }
 
-  const { data: loansData, isLoading } = useGetMyActiveLoansQuery();
+  const { data: loansData, isLoading } = useGetMyLoanHistoryQuery();
   const loans = loansData?.loans || [];
 
   const getStatusColor = (status: string) => {
@@ -33,19 +33,11 @@ export default function MyActiveLoansPage() {
       pending: "warning",
       approved: "gray",
       active: "success",
-      returned: "gray",
+      returned: "success",
       overdue: "danger",
       rejected: "danger",
     };
     return colors[status] || "gray";
-  };
-
-  const getDaysRemaining = (expectedReturnDate: string) => {
-    const today = new Date();
-    const returnDate = new Date(expectedReturnDate);
-    const diffTime = returnDate.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
   };
 
   const columns = [
@@ -58,22 +50,31 @@ export default function MyActiveLoansPage() {
       key: "inventoryItem" as const,
       render: (loan: any) => (
         <div>
-          <div className="font-medium">{loan.inventoryItem.name}</div>
+          <div className="font-medium">{loan.inventoryItem?.name}</div>
           <div className="text-sm text-gray-500">
-            {loan.inventoryItem.serialNumber}
+            {loan.inventoryItem?.serialNumber}
           </div>
         </div>
       ),
     },
     {
-      header: t("loan.lab"),
-      key: "lab" as const,
+      header: t("loan.sourceLab"),
+      key: "sourceLab" as const,
       render: (loan: any) => (
         <div>
-          <div>{loan.lab.name}</div>
+          <div>{loan.sourceLab?.name}</div>
+          <div className="text-sm text-gray-500">{loan.sourceLab?.labCode}</div>
+        </div>
+      ),
+    },
+    {
+      header: t("loan.destinationLab"),
+      key: "destinationLab" as const,
+      render: (loan: any) => (
+        <div>
+          <div>{loan.destinationLab?.name}</div>
           <div className="text-sm text-gray-500">
-            {loan.lab.labCode}
-            {loan.lab.department && ` - ${loan.lab.department.name}`}
+            {loan.destinationLab?.labCode}
           </div>
         </div>
       ),
@@ -83,34 +84,26 @@ export default function MyActiveLoansPage() {
       key: "quantity" as const,
     },
     {
-      header: t("loan.expectedReturn"),
-      key: "expectedReturnDate" as const,
-      render: (loan: any) => {
-        const daysRemaining = getDaysRemaining(loan.expectedReturnDate);
-        const isOverdue = daysRemaining < 0;
-        return (
-          <div>
-            <div
-              className={
-                isOverdue ? "text-red-600 font-medium" : "text-gray-900"
-              }
-            >
-              {new Date(loan.expectedReturnDate).toLocaleDateString()}
-            </div>
-            <div
-              className={`text-sm ${
-                isOverdue ? "text-red-500" : "text-gray-500"
-              }`}
-            >
-              {isOverdue
-                ? `${Math.abs(daysRemaining)} ${t("loan.daysOverdue")}`
-                : daysRemaining === 0
-                ? t("loan.dueToday")
-                : `${daysRemaining} ${t("loan.daysRemaining")}`}
-            </div>
-          </div>
-        );
-      },
+      header: t("loan.loanDate"),
+      key: "loanDate" as const,
+      render: (loan: any) => (
+        <div>{new Date(loan.loanDate).toLocaleDateString()}</div>
+      ),
+    },
+    {
+      header: t("loan.returnDate"),
+      key: "actualReturnDate" as const,
+      render: (loan: any) => (
+        <div>
+          {loan.actualReturnDate ? (
+            <span className="text-green-600">
+              {new Date(loan.actualReturnDate).toLocaleDateString()}
+            </span>
+          ) : (
+            <span className="text-gray-400">—</span>
+          )}
+        </div>
+      ),
     },
     {
       header: t("loan.status"),
@@ -128,7 +121,7 @@ export default function MyActiveLoansPage() {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => router.push(`/dashboard/loans/${loan.id}`)}
+          onClick={() => router.push(`/dashboard/loans/${loan._id}`)}
         >
           {t("common.viewDetails")}
         </Button>
@@ -145,9 +138,11 @@ export default function MyActiveLoansPage() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
-            {t("loan.myActiveLoans")}
+            {t("loan.inventoryLoansHistory")}
           </h1>
-          <p className="text-gray-600">{t("loan.myActiveLoansSubtitle")}</p>
+          <p className="text-gray-600">
+            {t("loan.inventoryLoansHistorySubtitle")}
+          </p>
         </div>
       </div>
 
@@ -156,7 +151,7 @@ export default function MyActiveLoansPage() {
           <Table columns={columns} data={loans} />
         ) : (
           <div className="text-center py-12">
-            <p className="text-gray-500">{t("loan.noActiveLoans")}</p>
+            <p className="text-gray-500">{t("loan.noLoanHistory")}</p>
           </div>
         )}
       </Card>

@@ -335,6 +335,14 @@ export default function EditUserPage() {
                   {t("roles.general_shakha")}
                 </option>
                 <option value="general_head">{t("roles.general_head")}</option>
+                <option value="vice_principal">
+                  {t("roles.vice_principal")}
+                </option>
+                <option value="principal">{t("roles.principal")}</option>
+                <option value="registrar_head">
+                  {t("roles.registrar_head")}
+                </option>
+                <option value="super_admin">{t("roles.super_admin")}</option>
               </select>
               {errors.role && (
                 <p className="mt-1 text-sm text-red-600">{errors.role}</p>

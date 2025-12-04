@@ -45,6 +45,7 @@ export default function InventoryFormPage() {
   );
 
   const [formData, setFormData] = useState({
+    itemName: "",
     quantity: "",
     condition: "good",
     status: "available",
@@ -57,13 +58,40 @@ export default function InventoryFormPage() {
   const [imagePreview, setImagePreview] = useState<string>("");
 
   const { data: departmentsData } = useGetAllDepartmentsQuery();
-  const { data: labsData } = useGetLabsByDepartmentQuery(formData.department, {
+  const {
+    data: labsData,
+    isLoading: labsLoading,
+    error: labsError,
+  } = useGetLabsByDepartmentQuery(formData.department, {
     skip: !formData.department,
   });
   const [createItem, { isLoading: isCreating }] =
     useCreateInventoryItemMutation();
   const [updateItem, { isLoading: isUpdating }] =
     useUpdateInventoryItemMutation();
+
+  // Debug logging
+  useEffect(() => {
+    console.log("=== INVENTORY FORM DEBUG ===");
+    console.log("Form Department:", formData.department);
+    console.log("User:", user);
+    console.log("User Department ID:", user?.department?._id);
+    console.log("User Department Name:", user?.department?.name);
+    console.log("Labs Data:", labsData);
+    console.log("Labs Array:", labsData?.labs);
+    console.log("Labs Count:", labsData?.labs?.length);
+    console.log("Labs Loading:", labsLoading);
+    console.log("Labs Error:", labsError);
+    console.log("Can Select Department:", canSelectDepartment);
+    console.log("Skip Query:", !formData.department);
+  }, [
+    formData.department,
+    labsData,
+    labsLoading,
+    labsError,
+    user,
+    canSelectDepartment,
+  ]);
 
   // Auto-select department for Chief Instructor and General Head
   useEffect(() => {
@@ -78,6 +106,7 @@ export default function InventoryFormPage() {
   useEffect(() => {
     if (item && isEdit) {
       setFormData({
+        itemName: item.itemName || "",
         quantity: item.quantity?.toString() || "",
         condition: item.condition || "good",
         status: item.status || "available",
@@ -143,6 +172,12 @@ export default function InventoryFormPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Validate item name
+    if (!formData.itemName.trim()) {
+      alert(t("inventory.itemNameRequired") || "Item name is required");
+      return;
+    }
+
     // Validate department
     if (!formData.department) {
       alert(t("inventory.departmentRequired") || "Department is required");
@@ -163,6 +198,7 @@ export default function InventoryFormPage() {
 
     try {
       const formDataToSend = new FormData();
+      formDataToSend.append("itemName", formData.itemName);
       formDataToSend.append("quantity", formData.quantity);
       formDataToSend.append("condition", formData.condition);
       formDataToSend.append("status", formData.status);
@@ -347,6 +383,15 @@ export default function InventoryFormPage() {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input
+                label={t("inventory.itemName")}
+                name="itemName"
+                type="text"
+                value={formData.itemName}
+                onChange={handleChange}
+                placeholder={t("inventory.itemNamePlaceholder")}
+                required
+              />
+              <Input
                 label={t("inventory.quantity")}
                 name="quantity"
                 type="number"
@@ -441,6 +486,16 @@ export default function InventoryFormPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   {t("inventory.lab")} *
+                  {labsLoading && (
+                    <span className="ml-2 text-xs text-blue-600">
+                      Loading labs...
+                    </span>
+                  )}
+                  {labsData?.labs && (
+                    <span className="ml-2 text-xs text-gray-500">
+                      ({labsData.labs.length} available)
+                    </span>
+                  )}
                 </label>
                 <select
                   name="lab"
@@ -448,12 +503,16 @@ export default function InventoryFormPage() {
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   required
-                  disabled={!formData.department}
+                  disabled={!formData.department || labsLoading}
                 >
                   <option value="">
-                    {formData.department
-                      ? t("common.select")
-                      : t("inventory.selectDepartmentFirst")}
+                    {!formData.department
+                      ? t("inventory.selectDepartmentFirst")
+                      : labsLoading
+                      ? "Loading labs..."
+                      : labsData?.labs?.length === 0
+                      ? "No labs available for this department"
+                      : t("common.select")}
                   </option>
                   {labsData?.labs?.map((lab: any) => (
                     <option key={lab._id} value={lab._id}>
@@ -461,6 +520,12 @@ export default function InventoryFormPage() {
                     </option>
                   ))}
                 </select>
+                {labsData?.labs?.length === 0 && formData.department && (
+                  <p className="mt-1 text-xs text-red-600">
+                    No labs found for this department. Please create a lab
+                    first.
+                  </p>
+                )}
               </div>
             </div>
           </div>

@@ -60,6 +60,7 @@ export const labApi = apiSlice.injectEndpoints({
     // Get labs by department
     getLabsByDepartment: builder.query<{ labs: Lab[]; total: number }, string>({
       query: (departmentId) => `/labs/department/${departmentId}`,
+      transformResponse: (response: any) => response.data,
       providesTags: (result) =>
         result
           ? [

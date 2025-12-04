@@ -117,6 +117,22 @@ export const loanApi = apiSlice.injectEndpoints({
           : [{ type: "Loan", id: "MY_ACTIVE" }],
     }),
 
+    // Get my loan history (all loans including returned/rejected)
+    getMyLoanHistory: builder.query<{ loans: Loan[]; total: number }, void>({
+      query: () => "/loans/my-history",
+      transformResponse: (response: any) => response.data,
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.loans.map(({ _id }) => ({
+                type: "Loan" as const,
+                id: _id,
+              })),
+              { type: "Loan", id: "MY_HISTORY" },
+            ]
+          : [{ type: "Loan", id: "MY_HISTORY" }],
+    }),
+
     // Get loan statistics
     getLoanStatistics: builder.query<
       LoanStatistics,
@@ -216,6 +232,7 @@ export const {
   useGetLoanQuery,
   useGetLoansByLabQuery,
   useGetMyActiveLoansQuery,
+  useGetMyLoanHistoryQuery,
   useGetLoanStatisticsQuery,
   useCreateLoanMutation,
   useApproveLoanMutation,

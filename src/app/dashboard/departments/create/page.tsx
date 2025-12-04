@@ -26,7 +26,8 @@ export default function CreateDepartmentPage() {
   const users = usersData?.data?.users || [];
 
   const chiefInstructors = users.filter(
-    (user: any) => user.role === "chief_instructor"
+    (user: any) =>
+      user.role === "chief_instructor" || user.role === "general_head"
   );
 
   const [formData, setFormData] = useState({

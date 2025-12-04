@@ -36,7 +36,8 @@ export default function VacationDetailsPage() {
   const [remarks, setRemarks] = useState("");
 
   const canReviewAsChief =
-    user?.role === "chief_instructor" && vacation?.status === "pending";
+    (user?.role === "chief_instructor" || user?.role === "general_head") &&
+    vacation?.status === "pending";
   const canReviewAsPrincipal =
     user?.role === "principal" &&
     (vacation?.status === "pending" ||
@@ -59,7 +60,7 @@ export default function VacationDetailsPage() {
 
     try {
       console.log("Reviewing vacation with ID:", vacation._id);
-      if (user?.role === "chief_instructor") {
+      if (user?.role === "chief_instructor" || user?.role === "general_head") {
         await reviewByChief({
           id: vacation._id,
           status: reviewAction as any,
@@ -83,7 +84,7 @@ export default function VacationDetailsPage() {
       setReviewModalOpen(false);
       setRemarks("");
       router.push(
-        user?.role === "chief_instructor"
+        user?.role === "chief_instructor" || user?.role === "general_head"
           ? "/dashboard/vacations/pending-chief"
           : "/dashboard/vacations/pending-principal"
       );

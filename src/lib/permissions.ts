@@ -266,13 +266,15 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.CHANGE_PASSWORD,
     Permission.VIEW_DASHBOARD,
     Permission.VIEW_STATISTICS,
-    // Inventory & Lab & Loan Management (Department Level)
+    // Inventory & Lab & Loan Management (Department Level - Same as Chief Instructor)
     Permission.VIEW_INVENTORY,
     Permission.CREATE_INVENTORY,
     Permission.EDIT_INVENTORY,
+    Permission.DELETE_INVENTORY,
     Permission.VIEW_LABS,
     Permission.CREATE_LAB,
     Permission.EDIT_LAB,
+    Permission.DELETE_LAB,
     Permission.VIEW_LOANS,
     Permission.REQUEST_LOAN,
     Permission.APPROVE_LOAN,
@@ -299,9 +301,11 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.VIEW_INVENTORY,
     Permission.CREATE_INVENTORY,
     Permission.EDIT_INVENTORY,
+    Permission.DELETE_INVENTORY,
     Permission.VIEW_LABS,
     Permission.CREATE_LAB,
     Permission.EDIT_LAB,
+    Permission.DELETE_LAB,
     Permission.VIEW_LOANS,
     Permission.REQUEST_LOAN,
     Permission.APPROVE_LOAN,
@@ -318,10 +322,12 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.EDIT_OWN_PROFILE,
     Permission.CHANGE_PASSWORD,
     Permission.VIEW_DASHBOARD,
-    // Loan Management
+    // Inventory & Loan Management
+    Permission.VIEW_INVENTORY,
     Permission.VIEW_LABS,
     Permission.REQUEST_LOAN,
     Permission.VIEW_OWN_LOANS,
+    Permission.RETURN_LOAN,
   ],
 
   // Craft Instructor - Specialized Teaching

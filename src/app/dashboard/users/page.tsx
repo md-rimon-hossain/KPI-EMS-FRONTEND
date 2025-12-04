@@ -54,8 +54,11 @@ export default function UsersPage() {
 
   // Filter users based on role and search
   const filteredUsers = users.filter((user: any) => {
-    // For Chief Instructor, only show users from their department
-    if (role === "chief_instructor" && currentUser?.department?._id) {
+    // For Chief Instructor & General Head, only show users from their department
+    if (
+      (role === "chief_instructor" || role === "general_head") &&
+      currentUser?.department?._id
+    ) {
       if (user.department?._id !== currentUser.department._id) {
         return false;
       }

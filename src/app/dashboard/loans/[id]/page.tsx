@@ -95,6 +95,18 @@ export default function LoanDetailPage() {
     );
   }
 
+  // Debug logging
+  console.log("=== LOAN DETAIL DEBUG ===");
+  console.log("Loan Status:", loan.status);
+  console.log("Can Return:", can(Permission.RETURN_LOAN));
+  console.log(
+    "Show Return Button:",
+    (loan.status === "approved" ||
+      loan.status === "active" ||
+      loan.status === "overdue") &&
+      can(Permission.RETURN_LOAN)
+  );
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
@@ -245,7 +257,9 @@ export default function LoanDetailPage() {
                 </Button>
               </>
             )}
-            {(loan.status === "active" || loan.status === "overdue") &&
+            {(loan.status === "approved" ||
+              loan.status === "active" ||
+              loan.status === "overdue") &&
               can(Permission.RETURN_LOAN) && (
                 <Button variant="primary" onClick={() => setReturnModal(true)}>
                   {t("loan.returnLoan")}

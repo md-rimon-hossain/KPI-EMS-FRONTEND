@@ -46,8 +46,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       },
     ];
 
-    // Super Admin Navigation
-    if (role === "super_admin") {
+    // Super Admin & Registrar Head Navigation
+    if (role === "super_admin" || role === "registrar_head") {
       return [
         ...baseNavigation,
         {
@@ -69,8 +69,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           permission: Permission.VIEW_ALL_VACATIONS,
         },
         {
-          name: t("nav.inventory"),
-          href: "/dashboard/inventory",
+          name: t("nav.inventoryOverview"),
+          href: "/dashboard/inventory-overview",
           icon: CubeIcon,
           permission: Permission.VIEW_INVENTORY,
         },
@@ -136,8 +136,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           permission: Permission.APPROVE_AS_PRINCIPAL,
         },
         {
-          name: t("nav.inventory"),
-          href: "/dashboard/inventory",
+          name: t("nav.inventoryOverview"),
+          href: "/dashboard/inventory-overview",
           icon: CubeIcon,
           permission: Permission.VIEW_INVENTORY,
         },
@@ -168,8 +168,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       ];
     }
 
-    // Chief Instructor Navigation
-    if (role === "chief_instructor") {
+    // Chief Instructor & General Head Navigation (identical permissions)
+    if (role === "chief_instructor" || role === "general_head") {
       return [
         ...baseNavigation,
         {
@@ -239,9 +239,21 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         permission: Permission.VIEW_OWN_VACATIONS,
       },
       {
+        name: t("nav.inventory"),
+        href: "/dashboard/inventory",
+        icon: CubeIcon,
+        permission: Permission.VIEW_INVENTORY,
+      },
+      {
         name: t("nav.myActiveLoans"),
         href: "/dashboard/loans/my-active",
         icon: ArrowsRightLeftIcon,
+        permission: Permission.VIEW_OWN_LOANS,
+      },
+      {
+        name: t("nav.inventoryLoansHistory"),
+        href: "/dashboard/loans/inventory-history",
+        icon: DocumentCheckIcon,
         permission: Permission.VIEW_OWN_LOANS,
       },
       {

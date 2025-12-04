@@ -380,10 +380,10 @@ export default function InventoryDashboardPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="font-semibold text-gray-900 truncate">
-                      {item.name}
+                      {item.itemName}
                     </h4>
                     <p className="text-xs text-gray-500 truncate">
-                      {item.serialNumber}
+                      {item.name} • {item.serialNumber}
                     </p>
                     <div className="flex items-center gap-2 mt-2">
                       <Badge

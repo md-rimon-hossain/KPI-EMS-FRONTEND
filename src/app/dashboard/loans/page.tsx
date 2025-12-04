@@ -133,16 +133,6 @@ export default function LoansPage() {
           </h1>
           <p className="text-gray-600 mt-1">{t("loan.subtitle")}</p>
         </div>
-        {can(Permission.REQUEST_LOAN) &&
-          (role === "chief_instructor" || role === "craft_instructor") && (
-            <Button
-              onClick={() => router.push("/dashboard/loans/request")}
-              className="flex items-center gap-2"
-            >
-              <PlusIcon className="w-5 h-5" />
-              {t("loan.requestLoan")}
-            </Button>
-          )}
       </div>
 
       {/* Filters */}
