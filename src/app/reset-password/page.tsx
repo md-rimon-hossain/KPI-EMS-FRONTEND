@@ -103,7 +103,7 @@ function ResetPasswordContent() {
               {t("auth.passwordResetSuccess")}
             </h2>
             <p className="text-gray-600 mb-6">
-              {t("auth.passwordResetSuccess")}
+              {t("auth.passwordResetMessage")}
             </p>
             <p className="text-sm text-gray-500 mb-8">{t("common.loading")}</p>
             <Link href="/login" className="inline-block btn-primary px-6 py-2">
@@ -172,7 +172,7 @@ function ResetPasswordContent() {
               type="password"
               required
               className="input-field"
-              placeholder="Confirm new password"
+              placeholder={t("auth.confirmPasswordPlaceholder")}
               value={formData.confirmPassword}
               onChange={(e) =>
                 setFormData({ ...formData, confirmPassword: e.target.value })
@@ -184,7 +184,9 @@ function ResetPasswordContent() {
           {formData.newPassword &&
             formData.confirmPassword &&
             formData.newPassword !== formData.confirmPassword && (
-              <p className="text-sm text-red-600">Passwords do not match</p>
+              <p className="text-sm text-red-600">
+                {t("auth.passwordsDoNotMatch")}
+              </p>
             )}
 
           <button
@@ -192,7 +194,7 @@ function ResetPasswordContent() {
             disabled={isLoading || !token}
             className="w-full btn-primary py-3 text-lg font-semibold"
           >
-            {isLoading ? "Resetting..." : "Reset Password"}
+            {isLoading ? t("auth.resetting") : t("auth.resetPassword")}
           </button>
 
           <div className="text-center">
@@ -200,7 +202,7 @@ function ResetPasswordContent() {
               href="/login"
               className="text-sm text-primary-600 hover:text-primary-500 font-medium"
             >
-              ← Back to Login
+              ← {t("auth.backToLogin")}
             </Link>
           </div>
         </form>

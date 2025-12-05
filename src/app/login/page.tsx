@@ -114,13 +114,13 @@ export default function LoginPage() {
       <div className="relative z-10 min-h-screen flex flex-col lg:flex-row">
         {/* Left Side - Information Panel */}
         <div
-          className={`lg:w-1/2 p-4 sm:p-6 lg:p-12 flex flex-col justify-center text-white ${
+          className={`lg:w-1/2 p-4 sm:p-6 lg:p-8 flex flex-col justify-center text-white ${
             showLoginForm ? "hidden lg:flex" : "flex"
           }`}
         >
           <div className="max-w-xl mx-auto w-full">
             {/* Top Bar - Language & Login Button */}
-            <div className="mb-4 sm:mb-6 flex items-center justify-between gap-3">
+            <div className="mb-3 sm:mb-4 flex items-center justify-between gap-3">
               {/* Language Switcher */}
               <button
                 onClick={toggleLanguage}
@@ -145,20 +145,20 @@ export default function LoginPage() {
             </div>
 
             {/* Logo & Title */}
-            <div className="mb-6 sm:mb-8">
-              <div className="inline-flex items-center justify-center bg-white/10 backdrop-blur-sm rounded-2xl shadow-2xl mb-4 sm:mb-6 p-3 sm:p-4">
+            <div className="mb-4 sm:mb-6">
+              <div className="inline-flex items-center justify-center bg-white/10 backdrop-blur-sm rounded-2xl shadow-2xl mb-3 sm:mb-4 p-2 sm:p-3">
                 <img
                   src="/images/logo.png"
                   alt="KPI EMS Logo"
-                  className="h-16 sm:h-20 lg:h-24 w-auto object-contain"
+                  className="h-12 sm:h-16 lg:h-20 w-auto object-contain"
                 />
               </div>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 sm:mb-3">
                 {i18n.language === "en"
                   ? "KPI Employee Management System"
                   : "কেপিআই কর্মচারী ব্যবস্থাপনা সিস্টেম"}
               </h1>
-              <p className="text-lg sm:text-xl text-blue-200 mb-6 sm:mb-8">
+              <p className="text-base sm:text-lg text-blue-200 mb-4 sm:mb-5">
                 {i18n.language === "en"
                   ? "Complete HR, Vacation & Inventory Management for Polytechnic Institutes"
                   : "পলিটেকনিক ইনস্টিটিউটের জন্য সম্পূর্ণ এইচআর, ছুটি এবং ইনভেন্টরি ব্যবস্থাপনা"}
@@ -166,28 +166,26 @@ export default function LoginPage() {
             </div>
 
             {/* Features Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 mb-4 sm:mb-5">
               {features.map((feature, index) => (
                 <div
                   key={index}
-                  className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all"
+                  className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20 hover:bg-white/20 transition-all"
                 >
-                  <feature.icon className="w-8 h-8 mb-2 text-blue-300" />
-                  <h3 className="font-semibold mb-1 text-sm sm:text-base">
+                  <feature.icon className="w-6 h-6 mb-1 text-blue-300" />
+                  <h3 className="font-semibold mb-1 text-xs sm:text-sm">
                     {feature.title}
                   </h3>
-                  <p className="text-xs sm:text-sm text-blue-200">
-                    {feature.desc}
-                  </p>
+                  <p className="text-xs text-blue-200">{feature.desc}</p>
                 </div>
               ))}
             </div>
 
             {/* Security Features */}
-            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 sm:p-5 border border-white/10 mb-6">
-              <div className="flex items-center gap-2 mb-3">
-                <ShieldCheckIcon className="w-6 h-6 text-green-400" />
-                <h3 className="font-semibold text-base sm:text-lg">
+            <div className="bg-white/5 backdrop-blur-sm rounded-lg p-3 sm:p-4 border border-white/10 mb-4">
+              <div className="flex items-center gap-2 mb-2">
+                <ShieldCheckIcon className="w-5 h-5 text-green-400" />
+                <h3 className="font-semibold text-sm sm:text-base">
                   {i18n.language === "en"
                     ? "Enterprise Security"
                     : "এন্টারপ্রাইজ নিরাপত্তা"}
@@ -209,52 +207,77 @@ export default function LoginPage() {
 
         {/* Right Side - Login Form */}
         <div
-          className={`lg:w-1/2 p-4 sm:p-6 lg:p-12 flex items-center justify-center ${
-            showLoginForm ? "flex" : "hidden lg:flex"
+          className={`lg:w-1/2 flex items-center justify-center ${
+            showLoginForm
+              ? "flex fixed inset-0 z-50 p-0 m-0 bg-white overflow-y-auto"
+              : "hidden lg:flex p-4 sm:p-6 lg:p-8"
           }`}
         >
-          <div className="w-full max-w-md">
-            <div className="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 lg:p-10">
-              {/* Back Button - Mobile Only */}
-              <button
-                onClick={() => setShowLoginForm(false)}
-                className="lg:hidden mb-4 flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-all"
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+          <div
+            className={`w-full ${
+              showLoginForm
+                ? "min-h-screen flex items-start justify-center py-0"
+                : "max-w-md"
+            }`}
+          >
+            <div
+              className={`bg-white w-full ${
+                showLoginForm
+                  ? "min-h-screen p-6"
+                  : "rounded-2xl shadow-2xl p-5 sm:p-6 lg:p-8"
+              }`}
+            >
+              {/* Mobile Header - Back Button & Language */}
+              <div className="lg:hidden mb-4 flex items-center justify-between">
+                <button
+                  onClick={() => setShowLoginForm(false)}
+                  className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-all"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 19l-7-7 7-7"
-                  />
-                </svg>
-                <span className="text-sm font-medium">
-                  {i18n.language === "en" ? "Back to Info" : "তথ্যে ফিরে যান"}
-                </span>
-              </button>
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 19l-7-7 7-7"
+                    />
+                  </svg>
+                  <span className="text-sm font-medium">
+                    {i18n.language === "en" ? "Back" : "ফিরুন"}
+                  </span>
+                </button>
+                <button
+                  onClick={toggleLanguage}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg transition-all text-sm font-medium text-gray-700"
+                >
+                  <GlobeAltIcon className="w-4 h-4" />
+                  {i18n.language === "en" ? "বাংলা" : "English"}
+                </button>
+              </div>
 
               {/* Form Header */}
-              <div className="text-center mb-6 sm:mb-8">
-                <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl mb-4">
-                  <LockClosedIcon className="w-8 h-8 text-white" />
+              <div className="text-center mb-5 sm:mb-6">
+                <div className="hidden lg:inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl mb-3">
+                  <LockClosedIcon className="w-7 h-7 text-white" />
                 </div>
-                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
                   {i18n.language === "en" ? "Welcome Back" : "স্বাগতম"}
                 </h2>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 mb-3">
                   {i18n.language === "en"
                     ? "Sign in to access your dashboard"
                     : "আপনার ড্যাশবোর্ড অ্যাক্সেস করতে সাইন ইন করুন"}
                 </p>
+                {/* Role Detection Message */}
+                
               </div>
 
               {/* Form */}
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label
                     htmlFor="email"
@@ -267,7 +290,7 @@ export default function LoginPage() {
                     type="email"
                     required
                     autoComplete="email"
-                    className="w-full px-4 py-3 text-sm border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full px-3 py-2.5 text-sm border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     placeholder={t("auth.emailPlaceholder")}
                     value={formData.email}
                     onChange={(e) =>
@@ -289,7 +312,7 @@ export default function LoginPage() {
                       type={showPassword ? "text" : "password"}
                       required
                       autoComplete="current-password"
-                      className="w-full px-4 py-3 text-sm border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all pr-12"
+                      className="w-full px-3 py-2.5 text-sm border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all pr-10"
                       placeholder={t("auth.passwordPlaceholder")}
                       value={formData.password}
                       onChange={(e) =>
@@ -365,7 +388,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full px-4 py-3.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-base font-bold rounded-xl shadow-lg hover:shadow-xl active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-base font-bold rounded-xl shadow-lg hover:shadow-xl active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {isLoading ? (
                     <>
@@ -396,12 +419,29 @@ export default function LoginPage() {
               </form>
 
               {/* System Info */}
-              <div className="mt-4 text-center text-xs text-gray-500">
-                <p>
-                  {i18n.language === "en"
-                    ? "🔒 Secure • 🚀 Fast • 📱 Mobile Ready"
-                    : "🔒 নিরাপদ • 🚀 দ্রুত • 📱 মোবাইল রেডি"}
-                </p>
+              <div className="mt-4 space-y-2">
+                <div className="text-center text-xs text-gray-500">
+                  <p>
+                    {i18n.language === "en"
+                      ? "🔒 Secure • 🚀 Fast • 📱 Mobile Ready"
+                      : "🔒 নিরাপদ • 🚀 দ্রুত • 📱 মোবাইল রেডি"}
+                  </p>
+                </div>
+                <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-2.5 text-center">
+                  <p className="text-xs text-gray-700">
+                    <span className="font-semibold text-green-700">
+                      {i18n.language === "en"
+                        ? "✓ Auto Role Detection"
+                        : "✓ স্বয়ংক্রিয় ভূমিকা সনাক্তকরণ"}
+                    </span>
+                    <br />
+                    <span className="text-gray-600">
+                      {i18n.language === "en"
+                        ? "Your permissions are automatically assigned based on your role"
+                        : "আপনার অনুমতিগুলি আপনার ভূমিকার উপর ভিত্তি করে স্বয়ংক্রিয়ভাবে নির্ধারিত হয়"}
+                    </span>
+                  </p>
+                </div>
               </div>
             </div>
           </div>
