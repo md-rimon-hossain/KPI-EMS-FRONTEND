@@ -28,19 +28,7 @@ export default function LoanRequestPage() {
     useGetInventoryItemsQuery({});
   const { data: labsData, isLoading: isLoadingLabs } = useGetLabsQuery({});
 
-  // Debug: Log the data to check what's being returned
-  console.log("=== LOAN REQUEST PAGE DEBUG ===");
-  console.log("User Role:", user?.role);
-  console.log("User Department:", user?.department);
-  console.log("User Department ID:", user?.department?._id);
-  console.log("Inventory Loading:", isLoadingInventory);
-  console.log("Inventory Data:", inventoryData);
-  console.log("Inventory Items Count:", inventoryData?.items?.length);
-  console.log("Labs Loading:", isLoadingLabs);
-  console.log("Labs Data:", labsData);
-  console.log("Labs Count:", labsData?.labs?.length);
-  console.log("==============================");
-
+ 
   const [formData, setFormData] = useState({
     inventoryItem: "",
     sourceLab: "", // Lab that owns the item (auto-filled from inventory)

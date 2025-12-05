@@ -63,20 +63,17 @@ export default function Modal({
 
       {/* Modal Container */}
       <div className="fixed inset-0 z-50 overflow-y-auto pointer-events-none">
-        {/* Modal - Desktop: Centered, Mobile: Bottom Sheet */}
-        <div className="flex min-h-full items-end sm:items-center justify-center p-0 sm:p-4 pointer-events-none">
+        {/* Modal - Centered on both mobile and desktop */}
+        <div className="flex min-h-full items-center justify-center p-4 pointer-events-none">
           <div
             className={clsx(
               "relative bg-white shadow-2xl w-full modal-transition gpu-accelerated pointer-events-auto",
-              "rounded-t-2xl sm:rounded-lg",
+              "rounded-lg",
               "max-h-[90vh] overflow-hidden",
               sizes[size]
             )}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Mobile Swipe Indicator */}
-            <div className="swipe-indicator sm:hidden" />
-
             {/* Header - Compact on Mobile */}
             {(title || showCloseButton) && (
               <div className="flex items-center justify-between p-3 sm:p-4 lg:p-6 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">

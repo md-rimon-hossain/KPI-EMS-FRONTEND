@@ -146,14 +146,14 @@ export default function AllVacationsPage() {
 
   return (
     <PermissionGuard permission={Permission.VIEW_ALL_VACATIONS}>
-      <div>
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-start gap-2">
+      <div className="px-2 sm:px-0">
+        <div className="flex items-center justify-between mb-3 sm:mb-4">
+          <div className="flex items-start gap-1.5 sm:gap-2">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
                 {t("nav.allVacations")}
               </h1>
-              <p className="text-gray-600 mt-1">
+              <p className="text-xs sm:text-sm text-gray-600 mt-0.5">
                 View all vacation requests (Approved & Rejected) across all
                 departments
               </p>
@@ -163,38 +163,38 @@ export default function AllVacationsPage() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <Card>
+        <div className="grid grid-cols-3 gap-1.5 sm:gap-3 mb-3 sm:mb-4">
+          <Card padding="sm">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">
+                <p className="text-[10px] sm:text-xs text-gray-600 leading-tight">
                   {t("vacation.labels.totalRequests")}
                 </p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-base sm:text-xl md:text-2xl font-bold text-gray-900 mt-0.5">
                   {filteredVacations.length}
                 </p>
               </div>
             </div>
           </Card>
-          <Card>
+          <Card padding="sm">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">
+                <p className="text-[10px] sm:text-xs text-gray-600 leading-tight">
                   {t("vacation.labels.approved")}
                 </p>
-                <p className="text-2xl font-bold text-green-600">
+                <p className="text-base sm:text-xl md:text-2xl font-bold text-green-600 mt-0.5">
                   {approvedCount}
                 </p>
               </div>
             </div>
           </Card>
-          <Card>
+          <Card padding="sm">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">
+                <p className="text-[10px] sm:text-xs text-gray-600 leading-tight">
                   {t("vacation.statuses.rejected")}
                 </p>
-                <p className="text-2xl font-bold text-red-600">
+                <p className="text-base sm:text-xl md:text-2xl font-bold text-red-600 mt-0.5">
                   {rejectedCount}
                 </p>
               </div>
@@ -203,22 +203,22 @@ export default function AllVacationsPage() {
         </div>
 
         {/* Filters */}
-        <Card className="mb-6">
-          <div className="flex items-center gap-2 mb-4">
-            <FunnelIcon className="w-5 h-5 text-gray-600" />
-            <h3 className="text-lg font-semibold text-gray-900">
+        <Card padding="sm" className="mb-3 sm:mb-4">
+          <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
+            <FunnelIcon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+            <h3 className="text-sm sm:text-base font-bold text-gray-900">
               {t("vacation.labels.filters")}
             </h3>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1">
                 Status
               </label>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-2.5 py-2 text-xs sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 tap-target"
               >
                 <option value="all">{t("vacation.labels.allStatus")}</option>
                 <option value="approved">
@@ -233,13 +233,13 @@ export default function AllVacationsPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1">
                 Department
               </label>
               <select
                 value={departmentFilter}
                 onChange={(e) => setDepartmentFilter(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-2.5 py-2 text-xs sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 tap-target"
               >
                 <option value="all">
                   {t("vacation.labels.allDepartments")}
@@ -254,8 +254,77 @@ export default function AllVacationsPage() {
           </div>
         </Card>
 
-        {/* Vacation Requests Table */}
-        <Card padding="none">
+        {/* Mobile Card View */}
+        <div className="lg:hidden space-y-2">
+          {filteredVacations.length === 0 ? (
+            <Card padding="sm">
+              <p className="text-center text-xs sm:text-sm text-gray-500 py-4">
+                No vacation requests found
+              </p>
+            </Card>
+          ) : (
+            filteredVacations.map((vacation: any) => (
+              <Card
+                key={vacation._id}
+                padding="sm"
+                className="cursor-pointer hover:shadow-md transition-shadow active:scale-[0.98]"
+                onClick={() =>
+                  router.push(`/dashboard/vacations/${vacation._id}`)
+                }
+              >
+                <div className="space-y-1.5">
+                  {/* Employee Info */}
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs sm:text-sm font-bold text-gray-900 truncate">
+                        {vacation.employee?.name || "N/A"}
+                      </p>
+                      <p className="text-[10px] sm:text-xs text-gray-500 truncate">
+                        {vacation.employee?.role?.replace(/_/g, " ")}
+                      </p>
+                    </div>
+                    {getStatusBadge(vacation.status)}
+                  </div>
+
+                  {/* Department & Type */}
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-[10px] sm:text-xs text-gray-600 bg-gray-100 px-2 py-0.5 rounded">
+                      {vacation.department?.name || "N/A"}
+                    </span>
+                    <span className="text-[10px] sm:text-xs text-gray-600 bg-blue-50 px-2 py-0.5 rounded capitalize">
+                      {vacation.vacationType?.replace(/_/g, " ")}
+                    </span>
+                    {vacation.isRewardVacation && (
+                      <Badge variant="success" size="sm">
+                        Reward
+                      </Badge>
+                    )}
+                  </div>
+
+                  {/* Dates */}
+                  <div className="text-[10px] sm:text-xs text-gray-600 pt-1 border-t border-gray-100">
+                    <span className="font-medium">
+                      {new Date(vacation.startDate).toLocaleDateString()} -{" "}
+                      {new Date(vacation.endDate).toLocaleDateString()}
+                    </span>
+                    <span className="text-gray-500 ml-2">
+                      ({vacation.workingDays}{" "}
+                      {t("vacation.workingDays").toLowerCase()})
+                    </span>
+                  </div>
+
+                  {/* Applied Date */}
+                  <div className="text-[10px] text-gray-400">
+                    Applied: {new Date(vacation.createdAt).toLocaleDateString()}
+                  </div>
+                </div>
+              </Card>
+            ))
+          )}
+        </div>
+
+        {/* Desktop Table View */}
+        <Card padding="none" className="hidden lg:block">
           <Table
             data={filteredVacations}
             columns={columns}
