@@ -10,6 +10,19 @@ export const metadata: Metadata = {
   title: "KPI EMS - Kushtia Polytechnic Institute Employee Management System",
   description:
     "Vacation Management System - Kushtia Polytechnic Institute Employee Management System for efficient leave and vacation tracking",
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 5,
+    userScalable: true,
+    viewportFit: "cover", // Support for notched devices (iPhone X+)
+  },
+  themeColor: "#2563eb",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "KPI EMS",
+  },
 };
 
 export default function RootLayout({

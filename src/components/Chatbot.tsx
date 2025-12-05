@@ -339,47 +339,49 @@ export default function Chatbot() {
 
   return (
     <>
-      {/* Floating Chat Button */}
+      {/* Floating Chat Button - Mobile Optimized */}
       {!isOpen && (
         <button
           onClick={toggleChat}
-          className="fixed bottom-6 right-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-50 group hover:scale-110"
+          className="fixed bottom-20 right-4 sm:bottom-6 sm:right-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-3 sm:p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-50 group hover:scale-110 active:scale-95"
           aria-label="Open Chatbot"
         >
           <div className="relative">
-            <ChatBubbleLeftRightIcon className="w-6 h-6" />
-            <SparklesIcon className="w-3 h-3 absolute -top-1 -right-1 text-yellow-300 animate-pulse" />
+            <ChatBubbleLeftRightIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+            <SparklesIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3 absolute -top-1 -right-1 text-yellow-300 animate-pulse" />
           </div>
-          <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-gray-900 text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+          <span className="hidden sm:block absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-gray-900 text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
             {t("chatbot.askMe") || "Ask me anything!"}
           </span>
         </button>
       )}
 
-      {/* Chat Window */}
+      {/* Chat Window - Fullscreen on Mobile, Compact Card on Desktop */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 w-96 h-[600px] bg-white rounded-2xl shadow-2xl flex flex-col z-50 border border-gray-200 overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-300">
-          {/* Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 flex items-center justify-between rounded-t-2xl">
-            <div className="flex items-center gap-3">
+        <div className="fixed inset-0 sm:inset-auto sm:bottom-4 sm:right-4 sm:w-[380px] lg:w-96 sm:h-[520px] lg:h-[600px] sm:max-h-[85vh] bg-white sm:rounded-2xl shadow-2xl flex flex-col z-50 border-0 sm:border border-gray-200 overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-300">
+          {/* Header - Compact Mobile */}
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-3 sm:p-4 flex items-center justify-between sm:rounded-t-2xl">
+            <div className="flex items-center gap-2 sm:gap-3">
               <div className="relative">
-                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                  <SparklesIcon className="w-6 h-6" />
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 rounded-full flex items-center justify-center">
+                  <SparklesIcon className="w-4 h-4 sm:w-6 sm:h-6" />
                 </div>
-                <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-white"></div>
+                <div className="absolute -bottom-0.5 -right-0.5 sm:-bottom-1 sm:-right-1 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-400 rounded-full border-2 border-white"></div>
               </div>
               <div>
-                <h3 className="font-semibold text-lg">KPI-EMS Assistant</h3>
-                <p className="text-xs text-white/80">
+                <h3 className="font-semibold text-base sm:text-lg">
+                  KPI-EMS AI
+                </h3>
+                <p className="text-[10px] sm:text-xs text-white/80">
                   {t("chatbot.alwaysHere") || "Always here to help"}
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               {chatHistory.length > 0 && (
                 <button
                   onClick={clearChat}
-                  className="text-white/80 hover:text-white text-xs px-2 py-1 hover:bg-white/10 rounded transition-colors"
+                  className="text-white/80 hover:text-white text-[10px] sm:text-xs px-1.5 sm:px-2 py-1 hover:bg-white/10 rounded transition-colors"
                   title={t("chatbot.clearChat") || "Clear chat"}
                 >
                   {t("chatbot.clear") || "Clear"}
@@ -387,55 +389,58 @@ export default function Chatbot() {
               )}
               <button
                 onClick={toggleChat}
-                className="text-white/80 hover:text-white transition-colors"
+                className="text-white/80 hover:text-white transition-colors p-1"
                 aria-label="Close Chatbot"
               >
-                <XMarkIcon className="w-6 h-6" />
+                <XMarkIcon className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
             </div>
           </div>
 
-          {/* User Context Banner (if available) */}
+          {/* User Context Banner - Compact Mobile */}
           {userContext && userContext.user && (
-            <div className="bg-blue-50 border-b border-blue-100 px-4 py-2">
-              <div className="flex items-center gap-2 text-xs text-blue-800">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span>
+            <div className="bg-blue-50 border-b border-blue-100 px-3 sm:px-4 py-1.5 sm:py-2">
+              <div className="flex items-center gap-2 text-[10px] sm:text-xs text-blue-800">
+                <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-500 rounded-full flex-shrink-0"></div>
+                <span className="truncate">
                   {t("chatbot.loggedInAs") || "Logged in as"}{" "}
-                  <strong>{userContext.user.name}</strong> (
-                  {userContext.user.role})
+                  <strong>{userContext.user.name}</strong>
+                  <span className="hidden sm:inline">
+                    {" "}
+                    ({userContext.user.role})
+                  </span>
                 </span>
               </div>
             </div>
           )}
 
-          {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+          {/* Messages - Mobile Optimized */}
+          <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4 bg-gray-50">
             {/* Show empty state only if no chat history and not typing */}
             {chatHistory.length === 0 && !isTyping && (
-              <div className="text-center py-8">
-                <div className="w-16 h-16 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-                  <ChatBubbleLeftRightIcon className="w-8 h-8 text-blue-600" />
+              <div className="text-center py-4 sm:py-8">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full mx-auto mb-3 sm:mb-4 flex items-center justify-center">
+                  <ChatBubbleLeftRightIcon className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600" />
                 </div>
-                <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                <h4 className="text-base sm:text-lg font-semibold text-gray-900 mb-1 sm:mb-2 px-4">
                   {t("chatbot.welcome") || "Welcome to KPI-EMS Assistant!"}
                 </h4>
-                <p className="text-sm text-gray-600 mb-4">
+                <p className="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4 px-4">
                   {t("chatbot.welcomeMessage") ||
                     "I can help you navigate the system, answer questions, and provide guidance."}
                 </p>
 
-                {/* Quick Suggestions */}
+                {/* Quick Suggestions - Compact Mobile */}
                 {suggestions && suggestions.suggestions.length > 0 && (
                   <div className="space-y-2">
-                    <p className="text-xs text-gray-500 font-medium mb-2">
+                    <p className="text-[10px] sm:text-xs text-gray-500 font-medium mb-2">
                       {t("chatbot.quickQuestions") || "Quick questions:"}
                     </p>
                     {suggestions.suggestions.map((suggestion, index) => (
                       <button
                         key={index}
                         onClick={() => handleSuggestionClick(suggestion)}
-                        className="block w-full text-left text-sm bg-white hover:bg-blue-50 text-gray-700 px-4 py-3 rounded-lg border border-gray-200 hover:border-blue-300 transition-colors"
+                        className="block w-full text-left text-xs sm:text-sm bg-white hover:bg-blue-50 text-gray-700 px-3 sm:px-4 py-2 sm:py-3 rounded-lg border border-gray-200 hover:border-blue-300 transition-colors active:scale-95"
                       >
                         {suggestion}
                       </button>
@@ -453,22 +458,22 @@ export default function Chatbot() {
                 }`}
               >
                 <div
-                  className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+                  className={`max-w-[85%] sm:max-w-[80%] rounded-2xl px-3 sm:px-4 py-2 sm:py-3 ${
                     msg.role === "user"
                       ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-br-sm"
                       : "bg-white text-gray-900 border border-gray-200 rounded-bl-sm shadow-sm"
                   }`}
                 >
                   {msg.role === "assistant" && (
-                    <div className="flex items-center gap-2 mb-2">
-                      <SparklesIcon className="w-4 h-4 text-blue-600" />
-                      <span className="text-xs font-medium text-blue-600">
-                        KPI-EMS Assistant
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+                      <SparklesIcon className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
+                      <span className="text-[10px] sm:text-xs font-medium text-blue-600">
+                        AI Assistant
                       </span>
                     </div>
                   )}
                   <div
-                    className={`text-sm whitespace-pre-wrap ${
+                    className={`text-xs sm:text-sm whitespace-pre-wrap leading-relaxed ${
                       msg.role === "assistant"
                         ? "prose prose-sm max-w-none"
                         : ""
@@ -489,17 +494,19 @@ export default function Chatbot() {
                               router.push(navIntent.path);
                               setIsOpen(false);
                             }}
-                            className="mt-3 flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:shadow-lg transition-all duration-200 text-sm font-medium w-full justify-center group"
+                            className="mt-2 sm:mt-3 flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg hover:shadow-lg transition-all duration-200 text-xs sm:text-sm font-medium w-full justify-center group active:scale-95"
                           >
-                            <span>📍 Go to {navIntent.label}</span>
-                            <ArrowRightIcon className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                            <span className="truncate">
+                              📍 Go to {navIntent.label}
+                            </span>
+                            <ArrowRightIcon className="w-3 h-3 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform flex-shrink-0" />
                           </button>
                         );
                       }
                     })()}
 
                   <div
-                    className={`text-xs mt-2 ${
+                    className={`text-[10px] sm:text-xs mt-1.5 sm:mt-2 ${
                       msg.role === "user" ? "text-white/70" : "text-gray-500"
                     }`}
                   >
@@ -514,34 +521,34 @@ export default function Chatbot() {
 
             {isTyping && (
               <div className="flex justify-start">
-                <div className="bg-white border border-gray-200 rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm">
-                  <div className="flex items-center gap-2">
-                    <SparklesIcon className="w-4 h-4 text-blue-600 animate-pulse" />
+                <div className="bg-white border border-gray-200 rounded-2xl rounded-bl-sm px-3 sm:px-4 py-2 sm:py-3 shadow-sm">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <SparklesIcon className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600 animate-pulse" />
                     <div className="flex gap-1">
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gray-400 rounded-full animate-bounce"></div>
                     </div>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* Show quick suggestions after welcome message */}
+            {/* Show quick suggestions after welcome message - Mobile Optimized */}
             {chatHistory.length === 1 &&
               chatHistory[0].role === "assistant" &&
               !isTyping &&
               suggestions &&
               suggestions.suggestions.length > 0 && (
-                <div className="space-y-2 px-2">
-                  <p className="text-xs text-gray-500 font-medium mb-2 text-center">
+                <div className="space-y-2 px-1 sm:px-2">
+                  <p className="text-[10px] sm:text-xs text-gray-500 font-medium mb-2 text-center">
                     {t("chatbot.quickQuestions") || "Quick questions:"}
                   </p>
                   {suggestions.suggestions.map((suggestion, index) => (
                     <button
                       key={index}
                       onClick={() => handleSuggestionClick(suggestion)}
-                      className="block w-full text-left text-sm bg-white hover:bg-blue-50 text-gray-700 px-4 py-3 rounded-lg border border-gray-200 hover:border-blue-300 transition-colors shadow-sm"
+                      className="block w-full text-left text-xs sm:text-sm bg-white hover:bg-blue-50 text-gray-700 px-3 sm:px-4 py-2 sm:py-3 rounded-lg border border-gray-200 hover:border-blue-300 transition-colors shadow-sm active:scale-95"
                     >
                       {suggestion}
                     </button>
@@ -552,9 +559,9 @@ export default function Chatbot() {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input */}
-          <div className="p-4 bg-white border-t border-gray-200">
-            <div className="flex gap-2">
+          {/* Input - Mobile Optimized */}
+          <div className="p-2.5 sm:p-4 bg-white border-t border-gray-200 safe-area-bottom">
+            <div className="flex gap-1.5 sm:gap-2">
               <input
                 ref={inputRef}
                 type="text"
@@ -562,24 +569,24 @@ export default function Chatbot() {
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder={t("chatbot.typeMessage") || "Type your message..."}
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                className="flex-1 px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs sm:text-sm"
                 disabled={isSending}
               />
               <button
                 onClick={() => handleSendMessage()}
                 disabled={!message.trim() || isSending}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-3 rounded-xl hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-2 sm:p-3 rounded-xl hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 flex-shrink-0"
                 aria-label="Send Message"
               >
                 {isSending ? (
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                 ) : (
-                  <PaperAirplaneIcon className="w-5 h-5" />
+                  <PaperAirplaneIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                 )}
               </button>
             </div>
-            <p className="text-xs text-gray-500 mt-2 text-center">
-              {t("chatbot.poweredBy") || "Powered by EMS AI Assistant"}
+            <p className="text-[10px] sm:text-xs text-gray-500 mt-1.5 sm:mt-2 text-center">
+              {t("chatbot.poweredBy") || "Powered by EMS AI"}
             </p>
           </div>
         </div>

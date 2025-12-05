@@ -297,6 +297,15 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           <XMarkIcon className="w-5 h-5" />
         </button>
 
+        {/* Logo Section - Hidden on mobile as it's in navbar */}
+        <div className="hidden lg:flex items-center justify-center p-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-indigo-50\">
+          <img
+            src="/images/logo.png"
+            alt="KPI EMS Logo"
+            className="h-16 w-auto object-contain"
+          />
+        </div>
+
         <div className="h-full px-2 sm:px-3 pb-4 overflow-y-auto scrollbar-thin">
           {/* Role Badge at Top */}
           <div className="mb-3 p-2 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-200">

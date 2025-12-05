@@ -202,6 +202,35 @@
     @apply gap-2 sm:gap-3 lg:gap-4;
   }
 
+  /* Touch-friendly tap targets (minimum 44x44px) */
+  .tap-target {
+    @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
+  }
+
+  /* Safe area support for notched devices */
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Mobile-optimized scrollable container */
+  .scroll-container {
+    @apply overflow-x-auto -mx-2 px-2 sm:mx-0 sm:px-0;
+  }
+
+  /* Compact mobile spacing */
+  .mobile-spacing {
+    @apply space-y-2 sm:space-y-3 lg:space-y-4;
+  }
+
+  /* Mobile gap utilities */
+  .gap-compact {
+    @apply gap-2 sm:gap-3 lg:gap-4;
+  }
+
   /* Hide on mobile */
   .hide-mobile {
     @apply hidden sm:block;
@@ -368,6 +397,29 @@
 
 /* Mobile-first responsive utilities */
 @layer utilities {
+  /* Mobile-optimized animations */
+  .animate-fade-in {
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  .animate-slide-in {
+    animation: slideIn 0.3s ease-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.2s ease-out;
+  }
+
+  /* Mobile performance optimizations */
+  .gpu-accelerate {
+    transform: translateZ(0);
+    will-change: transform;
+  }
+
   /* Prevent text selection on tap (better mobile feel) */
   .no-tap-highlight {
     -webkit-tap-highlight-color: transparent;

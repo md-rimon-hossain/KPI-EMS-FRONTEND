@@ -27,8 +27,8 @@ export default function Table<T extends { _id?: string; id?: string }>({
 }: TableProps<T>) {
   if (data.length === 0) {
     return (
-      <div className="text-center py-8 sm:py-12 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border border-gray-200">
-        <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gray-200 mb-3">
+      <div className="text-center py-6 sm:py-8 lg:py-12 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border border-gray-200">
+        <div className="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 lg:w-16 lg:h-16 rounded-full bg-gray-200 mb-2 sm:mb-3">
           <svg
             className="w-6 h-6 sm:w-8 sm:h-8 text-gray-400"
             fill="none"
@@ -59,7 +59,7 @@ export default function Table<T extends { _id?: string; id?: string }>({
               <th
                 key={column.key}
                 style={{ width: column.width }}
-                className="px-3 py-2.5 sm:px-4 sm:py-3 text-left text-xs sm:text-sm font-bold text-gray-700 uppercase tracking-wide"
+                className="px-2 py-2 sm:px-3 sm:py-2.5 lg:px-4 lg:py-3 text-left text-[10px] sm:text-xs lg:text-sm font-bold text-gray-700 uppercase tracking-tight sm:tracking-wide whitespace-nowrap"
               >
                 {column.header}
               </th>
@@ -81,7 +81,7 @@ export default function Table<T extends { _id?: string; id?: string }>({
               {columns.map((column) => (
                 <td
                   key={`${item._id || item.id || index}-${column.key}`}
-                  className="px-3 py-2.5 sm:px-4 sm:py-3 text-xs sm:text-sm text-gray-900"
+                  className="px-2 py-2 sm:px-3 sm:py-2.5 lg:px-4 lg:py-3 text-[10px] sm:text-xs lg:text-sm text-gray-900 whitespace-nowrap"
                 >
                   {column.render
                     ? column.render(item)

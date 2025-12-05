@@ -95,9 +95,9 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="section-spacing">
+    <div className="section-spacing p-2 sm:p-4 lg:p-6">
       {/* Header - Ultra Compact Mobile */}
-      <div className="mb-4 sm:mb-6">
+      <div className="mb-3 sm:mb-4 lg:mb-6">
         <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
           {getGreeting()}, <span className="text-blue-600">{user?.name}</span>!
         </h1>

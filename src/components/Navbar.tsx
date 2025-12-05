@@ -55,18 +55,23 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
   }, []);
 
   return (
-    <nav className="bg-white border-b border-gray-200 fixed w-full z-30 top-0 shadow-sm">
-      <div className="px-2 py-2 sm:px-4 sm:py-3 lg:px-6">
+    <nav className="bg-white border-b border-gray-200 fixed w-full z-30 top-0 shadow-sm safe-area-top">
+      <div className="px-2 py-1.5 sm:px-3 sm:py-2 lg:px-6 lg:py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center justify-start gap-1 sm:gap-2">
             <button
               onClick={onMenuClick}
-              className="tap-target p-1.5 sm:p-2 text-gray-500 rounded-lg lg:hidden hover:bg-gray-100 active:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-colors"
+              className="tap-target p-2 sm:p-2.5 text-gray-500 rounded-lg lg:hidden hover:bg-gray-100 active:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all duration-200 active:scale-95"
             >
               <Bars3Icon className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
-            <div className="flex items-center">
-              <span className="text-base sm:text-lg lg:text-xl font-bold whitespace-nowrap bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <img
+                src="/images/logo.png"
+                alt="KPI EMS Logo"
+                className="h-8 sm:h-10 lg:h-12 w-auto object-contain"
+              />
+              <span className="hidden sm:inline text-sm sm:text-base lg:text-lg font-semibold text-gray-700">
                 {t("app.name")}
               </span>
             </div>
