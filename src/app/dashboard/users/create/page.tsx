@@ -293,13 +293,13 @@ export default function CreateUserPage() {
 
   return (
     <PermissionGuard permission={Permission.CREATE_USER}>
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8 flex items-start gap-2">
+      <div className="max-w-5xl mx-auto px-3 sm:px-4 lg:px-6">
+        <div className="mb-3 sm:mb-4 flex items-start gap-1.5 sm:gap-2">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+            <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
               {t("user.createUser")}
             </h1>
-            <p className="text-gray-600 mt-2">
+            <p className="text-xs sm:text-sm text-gray-600 mt-0.5 sm:mt-1">
               {t("user.createUserSubtitle") ||
                 "Add a new employee to the system"}
             </p>
@@ -312,13 +312,13 @@ export default function CreateUserPage() {
           />
         </div>
 
-        {/* Information Banner */}
+        {/* Information Banner - Compact Mobile */}
         {!isSuperAdmin && (
-          <div className="mb-6 bg-blue-50 border-l-4 border-blue-400 p-4">
+          <div className="mb-3 sm:mb-4 bg-blue-50 border-l-4 border-blue-400 p-2.5 sm:p-3">
             <div className="flex">
               <div className="flex-shrink-0">
                 <svg
-                  className="h-5 w-5 text-blue-400"
+                  className="h-4 w-4 sm:h-5 sm:w-5 text-blue-400"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
@@ -329,16 +329,16 @@ export default function CreateUserPage() {
                   />
                 </svg>
               </div>
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-blue-800">
+              <div className="ml-2 sm:ml-3">
+                <h3 className="text-xs sm:text-sm font-semibold text-blue-800">
                   Gmail Verification Required
                 </h3>
-                <div className="mt-2 text-sm text-blue-700">
-                  <p>
+                <div className="mt-1 sm:mt-1.5 text-[10px] sm:text-xs text-blue-700">
+                  <p className="mb-1">
                     To ensure valid email addresses, verify the employee&apos;s
                     Gmail with a one-time code:
                   </p>
-                  <ol className="list-decimal list-inside mt-2 space-y-1">
+                  <ol className="list-decimal list-inside space-y-0.5">
                     <li>Select the user role</li>
                     <li>Enter the employee&apos;s Gmail address</li>
                     <li>
@@ -359,18 +359,18 @@ export default function CreateUserPage() {
           </div>
         )}
 
-        <Card>
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <Card padding="sm">
+          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
             {/* Step 1: Role Selection */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1">
                 {t("user.role")} <span className="text-red-500">*</span>
               </label>
               <select
                 name="role"
                 value={formData.role}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                className="w-full px-3 py-2 sm:py-2.5 text-xs sm:text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 required
               >
                 <option value="instructor">{t("roles.instructor")}</option>
@@ -443,14 +443,14 @@ export default function CreateUserPage() {
                   : ""
               }
             >
-              {/* Profile Image Upload */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+              {/* Profile Image Upload - Compact */}
+              <div className="mb-3 sm:mb-4">
+                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5">
                   {t("user.profileImage") || "Profile Image"}
                 </label>
 
                 {imagePreview && (
-                  <div className="relative w-32 h-32 mb-4">
+                  <div className="relative w-20 h-20 sm:w-24 sm:h-24 mb-2">
                     <img
                       src={imagePreview}
                       alt="Profile preview"
@@ -459,10 +459,10 @@ export default function CreateUserPage() {
                     <button
                       type="button"
                       onClick={handleRemoveImage}
-                      className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                      className="tap-target absolute -top-1 -right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 active:scale-95 transition-all"
                       disabled={!isSuperAdmin && !gmailVerified}
                     >
-                      <XMarkIcon className="w-4 h-4" />
+                      <XMarkIcon className="w-3 h-3 sm:w-4 sm:h-4" />
                     </button>
                   </div>
                 )}
@@ -470,13 +470,13 @@ export default function CreateUserPage() {
                 {!imagePreview && (
                   <div
                     onClick={() => fileInputRef.current?.click()}
-                    className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-blue-500 transition-colors"
+                    className="border-2 border-dashed border-gray-300 rounded-lg p-3 sm:p-4 text-center cursor-pointer hover:border-blue-500 active:border-blue-600 transition-colors"
                   >
-                    <PhotoIcon className="w-10 h-10 mx-auto text-gray-400 mb-2" />
-                    <p className="text-sm text-gray-600 mb-1">
+                    <PhotoIcon className="w-8 h-8 sm:w-10 sm:h-10 mx-auto text-gray-400 mb-1.5" />
+                    <p className="text-xs sm:text-sm text-gray-600 mb-0.5">
                       {t("inventory.uploadImage") || "Click to upload image"}
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-[10px] sm:text-xs text-gray-500">
                       {t("inventory.imageInstructions") ||
                         "PNG, JPG, GIF, WEBP up to 5MB"}
                     </p>
@@ -515,8 +515,8 @@ export default function CreateUserPage() {
                 disabled={!isSuperAdmin && !gmailVerified}
               />
 
-              {/* Contact Information */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Contact Information - Compact */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
                 <Input
                   label={t("user.phone")}
                   type="tel"
@@ -527,14 +527,14 @@ export default function CreateUserPage() {
                 />
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1">
                     {t("user.department")}
                   </label>
                   <select
                     name="department"
                     value={formData.department}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    className="w-full px-3 py-2 sm:py-2.5 text-xs sm:text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     disabled={!isSuperAdmin && !gmailVerified}
                   >
                     <option value="">
@@ -549,11 +549,11 @@ export default function CreateUserPage() {
                 </div>
               </div>
 
-              {/* Employment & Job Details Section */}
-              <div className="mt-8 pt-8 border-t border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+              {/* Employment & Job Details Section - Compact */}
+              <div className="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-gray-200">
+                <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-2 sm:mb-3 flex items-center">
                   <svg
-                    className="w-5 h-5 mr-2 text-blue-600"
+                    className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2 text-blue-600"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -568,7 +568,7 @@ export default function CreateUserPage() {
                   {t("user.employmentInfo")}
                 </h3>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
                   <Input
                     label={t("user.jobTitle")}
                     name="jobTitle"
@@ -588,14 +588,14 @@ export default function CreateUserPage() {
                   />
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1">
                       {t("user.employmentStatus")}
                     </label>
                     <select
                       name="employmentStatus"
                       value={formData.employmentStatus}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                      className="w-full px-3 py-2 sm:py-2.5 text-xs sm:text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                       disabled={!isSuperAdmin && !gmailVerified}
                     >
                       <option value="permanent">
@@ -646,8 +646,8 @@ export default function CreateUserPage() {
                   />
                 </div>
 
-                <div className="mt-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                <div className="mt-2 sm:mt-3">
+                  <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1">
                     {t("user.jobDescription")}
                   </label>
                   <textarea
@@ -655,18 +655,18 @@ export default function CreateUserPage() {
                     value={formData.jobDescription}
                     onChange={(e) => handleChange(e as any)}
                     rows={3}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    className="w-full px-3 py-2 text-xs sm:text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     placeholder="Brief description of responsibilities..."
                     disabled={!isSuperAdmin && !gmailVerified}
                   />
                 </div>
               </div>
 
-              {/* Personal Information Section */}
-              <div className="mt-8 pt-8 border-t border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+              {/* Personal Information Section - Compact */}
+              <div className="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-gray-200">
+                <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-2 sm:mb-3 flex items-center">
                   <svg
-                    className="w-5 h-5 mr-2 text-blue-600"
+                    className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2 text-blue-600"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -731,11 +731,11 @@ export default function CreateUserPage() {
                 </div>
               </div>
 
-              {/* Emergency Contact Section */}
-              <div className="mt-8 pt-8 border-t border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+              {/* Emergency Contact Section - Compact */}
+              <div className="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-gray-200">
+                <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-2 sm:mb-3 flex items-center">
                   <svg
-                    className="w-5 h-5 mr-2 text-blue-600"
+                    className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2 text-blue-600"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -750,7 +750,7 @@ export default function CreateUserPage() {
                   {t("user.emergencyContact")}
                 </h3>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
                   <Input
                     label={t("user.contactName")}
                     name="emergencyContactName"
@@ -782,12 +782,12 @@ export default function CreateUserPage() {
               </div>
             </div>
 
-            {/* Info message when form is disabled */}
+            {/* Info message when form is disabled - Compact */}
             {!isSuperAdmin && !gmailVerified && (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
-                <div className="flex">
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-2.5 sm:p-3">
+                <div className="flex items-start">
                   <svg
-                    className="h-5 w-5 text-yellow-400 mr-2"
+                    className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-400 mr-1.5 sm:mr-2 flex-shrink-0 mt-0.5"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -799,7 +799,7 @@ export default function CreateUserPage() {
                       d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
                     />
                   </svg>
-                  <p className="text-sm text-yellow-800">
+                  <p className="text-xs sm:text-sm text-yellow-800">
                     Please verify the Gmail address above to continue filling
                     the form.
                   </p>
@@ -807,21 +807,25 @@ export default function CreateUserPage() {
               </div>
             )}
 
-            <div className="flex flex-col sm:flex-row gap-3 mt-8">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-4 sm:mt-6">
               <Button
                 type="submit"
                 variant="primary"
+                size="sm"
                 loading={isLoading}
                 disabled={!isSuperAdmin && !gmailVerified}
                 fullWidth
+                className="tap-target"
               >
                 {t("user.createUser")}
               </Button>
               <Button
                 type="button"
                 variant="secondary"
+                size="sm"
                 onClick={() => router.back()}
                 fullWidth
+                className="tap-target"
               >
                 {t("common.cancel")}
               </Button>
