@@ -102,7 +102,7 @@ export default function DepartmentVacationsPage() {
     },
     {
       key: "status",
-      header: t("vacation.status"),
+      header: t("common.status"),
       render: (vacation: any) => getStatusBadge(vacation.status),
     },
     {

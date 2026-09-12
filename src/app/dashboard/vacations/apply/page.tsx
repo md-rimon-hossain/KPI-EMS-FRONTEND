@@ -167,12 +167,12 @@ export default function ApplyVacationPage() {
 
       // Check if start date is in the past
       if (start < today) {
-        newErrors.startDate = t("vacation.startDateRequired");
+        newErrors.startDate = t("vacation.validation.startDatePast");
       }
 
       // Check if start date is a weekend
       if (isWeekend(start)) {
-        newErrors.startDate = t("vacation.calculationNote");
+        newErrors.startDate = t("vacation.validation.startOnWeekend");
       }
 
       // Check if end date is before start date
@@ -182,7 +182,7 @@ export default function ApplyVacationPage() {
 
       // Check if end date is a weekend
       if (isWeekend(end)) {
-        newErrors.endDate = t("vacation.calculationNote");
+        newErrors.endDate = t("vacation.validation.endOnWeekend");
       }
     }
 
@@ -203,7 +203,7 @@ export default function ApplyVacationPage() {
       }
 
       if (workingDays === 0) {
-        newErrors.endDate = t("vacation.calculationNote");
+        newErrors.endDate = t("vacation.validation.zeroWorkingDays");
       }
     }
 

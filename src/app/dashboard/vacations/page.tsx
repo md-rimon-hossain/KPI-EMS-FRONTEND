@@ -98,7 +98,7 @@ export default function VacationsPage() {
     },
     {
       key: "status",
-      header: t("vacation.status"),
+      header: t("common.status"),
       render: (vacation: any) => (
         <Badge variant={getStatusBadgeVariant(vacation.status)}>
           {vacation.status.replace(/_/g, " ")}
