@@ -66,14 +66,14 @@ export default function MyActiveLoansPage() {
       ),
     },
     {
-      header: t("loan.lab"),
-      key: "lab" as const,
+      header: t("loan.sourceLab"),
+      key: "sourceLab" as const,
       render: (loan: any) => (
         <div>
-          <div>{loan.lab.name}</div>
+          <div>{loan.sourceLab?.name}</div>
           <div className="text-sm text-gray-500">
-            {loan.lab.labCode}
-            {loan.lab.department && ` - ${loan.lab.department.name}`}
+            {loan.sourceLab?.labCode}
+            {loan.sourceLab?.department && ` - ${loan.sourceLab.department.name}`}
           </div>
         </div>
       ),
@@ -128,7 +128,7 @@ export default function MyActiveLoansPage() {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => router.push(`/dashboard/loans/${loan.id}`)}
+          onClick={() => router.push(`/dashboard/loans/${loan._id}`)}
         >
           {t("common.viewDetails")}
         </Button>

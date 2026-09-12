@@ -17,6 +17,7 @@ import Badge from "@/components/Badge";
 import Modal from "@/components/Modal";
 import Loading from "@/components/Loading";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import toast from "react-hot-toast";
 
 export default function LoanDetailPage() {
   const { t } = useTranslation();
@@ -42,8 +43,10 @@ export default function LoanDetailPage() {
       await approveLoan({ id: params?.id as string, notes }).unwrap();
       setApproveModal(false);
       setNotes("");
-    } catch (error) {
+      toast.success(t("loan.approveSuccess"));
+    } catch (error: any) {
       console.error("Failed to approve loan:", error);
+      toast.error(error?.data?.message || "Failed to approve loan");
     }
   };
 
@@ -52,8 +55,10 @@ export default function LoanDetailPage() {
       await rejectLoan({ id: params?.id as string, notes }).unwrap();
       setRejectModal(false);
       setNotes("");
-    } catch (error) {
+      toast.success(t("loan.rejectSuccess"));
+    } catch (error: any) {
       console.error("Failed to reject loan:", error);
+      toast.error(error?.data?.message || "Failed to reject loan");
     }
   };
 
@@ -66,8 +71,10 @@ export default function LoanDetailPage() {
       }).unwrap();
       setReturnModal(false);
       setNotes("");
-    } catch (error) {
+      toast.success(t("loan.returnSuccess"));
+    } catch (error: any) {
       console.error("Failed to return loan:", error);
+      toast.error(error?.data?.message || "Failed to return loan");
     }
   };
 

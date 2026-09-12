@@ -12,9 +12,11 @@ import { useGetLabsQuery } from "@/store/labApi";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 import Card from "@/components/Card";
+
+import toast from "react-hot-toast";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
-export default function LoanRequestPage() {
+export default function RequestLoanPage() {
   const { t } = useTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -93,10 +95,22 @@ export default function LoanRequestPage() {
         loanDate: new Date().toISOString(), // Default to current date
       };
 
-      await createLoan(payload).unwrap();
+      const res = await createLoan(payload).unwrap();
+      const newLoan = (res as any)?.data?.loan || res;
+
+      if (newLoan.status === "pending") {
+        toast.success(
+          "Loan request submitted successfully! It will become an active loan once the Chief Instructor approves it.",
+          { duration: 5000 }
+        );
+      } else {
+        toast.success(t("loan.createSuccess"));
+      }
+
       router.push("/dashboard/loans");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to create loan request:", error);
+      toast.error(error?.data?.message || "Failed to submit loan request");
     }
   };
 
